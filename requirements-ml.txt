@@ -1,0 +1,3 @@
+# Optional real TransUNet inference runtime; the baseline does not need PyTorch.
+# Choose a CUDA build from https://pytorch.org/get-started/locally/ if needed.
+torch>=2.6,<3

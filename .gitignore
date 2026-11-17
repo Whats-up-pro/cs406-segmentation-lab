@@ -1,0 +1,36 @@
+# Local data, checkpoints, experiment outputs and course documents
+data/
+results/
+output/
+deliverables/
+*.zip
+*.pth
+*.pt
+*.onnx
+*.pkl
+*.joblib
+*.pdf
+*.docx
+*.pptx
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

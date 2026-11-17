@@ -1,0 +1,101 @@
+{
+  "sha": "02ef0010b36eb8328b5e689eadaf613602edf9b8",
+  "node_id": "C_kwDOFBXge9oAKDAyZWYwMDEwYjM2ZWI4MzI4YjVlNjg5ZWFkYWY2MTM2MDJlZGY5Yjg",
+  "commit": {
+    "author": {
+      "name": "Jieneng Chen",
+      "email": "jienengchen01@gmail.com",
+      "date": "2026-02-25T04:44:14Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-02-25T04:44:14Z"
+    },
+    "message": "Update README.md",
+    "tree": {
+      "sha": "f283202a0030bd7c6e9246c4cefece195b21ab5b",
+      "url": "https://api.github.com/repos/Beckschen/TransUNet/git/trees/f283202a0030bd7c6e9246c4cefece195b21ab5b"
+    },
+    "url": "https://api.github.com/repos/Beckschen/TransUNet/git/commits/02ef0010b36eb8328b5e689eadaf613602edf9b8",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJpnn4eCRC1aQ7uu5UhlAAASGEQAGB7HU1z9u7qz0GdHHhObYV8\nimX3wIJ7GXh+/pRqwbpZhZ0XyQ1umjX7CUH0Gwan20N1d7/FssH582lhDr0U04G/\n4Wc65hnCiVhXzBaXeGBXbXJ2SW1bsmDh8pltzvkQo711TIK0klhM6pAQJbNZiyR7\nTJbJ2fkrpxSwwnssWbFftRn9ka9ET5E9K2lvOwhMLew4E+J8VvGMXJA0vMyFGmc5\n/ynOM6Uj2DcF3szJDZQfK98Rtn2jWvSwMvbUFGuOTPg/bv3O3V2DK930X61un9mC\n7d6HMConiAQSOcWAkQQgAi9KdMB2se+YYD5U2TBHTGcUHoaPjp3dFEamw5dFMZhB\nk+bY1i+2FNq1TDy6eQmTvrB5G3p414kn2uEbB4ZHZDENyosT1k+e72wl3ieaVlIJ\nXYvWQDMz+1FeRAOncBs1MBI+SDVcoM6AE6WWO3ZUHkfJjaNDAu3PIcRZmry4/X6p\n2z1loQ0nTwOa7dY5vU8OUfRDzkkiMt/oYo+bAgpWjQL2JOjGK7ptF0+z6fLx4/Ol\n3VFZn87n0BPaKh4TnKh5b5W/Bwi3LTeCe/ZrP1BQJ9czEqaaUwbTq/WLmWgTLvTS\nCj+3jwdN6Ou1LncPc7sjtV8Oiq6kKMnSPv+OITLLZk6eOi7k5lT56B4DVjMsokU5\nCXVLpKZdNOG0koWR8LNp\n=nkl0\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree f283202a0030bd7c6e9246c4cefece195b21ab5b\nparent a48c44f651beac7c6b729bbd0f3724963f74f849\nauthor Jieneng Chen <jienengchen01@gmail.com> 1771994654 -0500\ncommitter GitHub <noreply@github.com> 1771994654 -0500\n\nUpdate README.md",
+      "verified_at": "2026-02-25T04:44:15Z"
+    }
+  },
+  "url": "https://api.github.com/repos/Beckschen/TransUNet/commits/02ef0010b36eb8328b5e689eadaf613602edf9b8",
+  "html_url": "https://github.com/Beckschen/TransUNet/commit/02ef0010b36eb8328b5e689eadaf613602edf9b8",
+  "comments_url": "https://api.github.com/repos/Beckschen/TransUNet/commits/02ef0010b36eb8328b5e689eadaf613602edf9b8/comments",
+  "author": {
+    "login": "Beckschen",
+    "id": 30471421,
+    "node_id": "MDQ6VXNlcjMwNDcxNDIx",
+    "avatar_url": "https://avatars.githubusercontent.com/u/30471421?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Beckschen",
+    "html_url": "https://github.com/Beckschen",
+    "followers_url": "https://api.github.com/users/Beckschen/followers",
+    "following_url": "https://api.github.com/users/Beckschen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Beckschen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Beckschen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Beckschen/subscriptions",
+    "organizations_url": "https://api.github.com/users/Beckschen/orgs",
+    "repos_url": "https://api.github.com/users/Beckschen/repos",
+    "events_url": "https://api.github.com/users/Beckschen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Beckschen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "web-flow",
+    "id": 19864447,
+    "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+    "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/web-flow",
+    "html_url": "https://github.com/web-flow",
+    "followers_url": "https://api.github.com/users/web-flow/followers",
+    "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+    "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+    "organizations_url": "https://api.github.com/users/web-flow/orgs",
+    "repos_url": "https://api.github.com/users/web-flow/repos",
+    "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/web-flow/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "a48c44f651beac7c6b729bbd0f3724963f74f849",
+      "url": "https://api.github.com/repos/Beckschen/TransUNet/commits/a48c44f651beac7c6b729bbd0f3724963f74f849",
+      "html_url": "https://github.com/Beckschen/TransUNet/commit/a48c44f651beac7c6b729bbd0f3724963f74f849"
+    }
+  ],
+  "stats": {
+    "total": 4,
+    "additions": 1,
+    "deletions": 3
+  },
+  "files": [
+    {
+      "sha": "067feae204eaf21f1a769a8a88239d58d25e3261",
+      "filename": "README.md",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 3,
+      "changes": 4,
+      "blob_url": "https://github.com/Beckschen/TransUNet/blob/02ef0010b36eb8328b5e689eadaf613602edf9b8/README.md",
+      "raw_url": "https://github.com/Beckschen/TransUNet/raw/02ef0010b36eb8328b5e689eadaf613602edf9b8/README.md",
+      "contents_url": "https://api.github.com/repos/Beckschen/TransUNet/contents/README.md?ref=02ef0010b36eb8328b5e689eadaf613602edf9b8",
+      "patch": "@@ -28,9 +28,7 @@ mv {MODEL_NAME}.npz ../model/vit_checkpoint/imagenet21k/{MODEL_NAME}.npz\n ```\n \n [Update 2026/02] The official ViT weights appear to have expired. \n-You can still download a copy from the [project folder](https://drive.google.com/drive/folders/1ACJEoTp-uqfFJ73qS3eUObQh52nGuzCd?usp=sharing) (same to BTCV preprocessed data).\n-\n-After extraction, find the file at:\n+You can still download a copy from the [project folder](https://drive.google.com/drive/folders/1ACJEoTp-uqfFJ73qS3eUObQh52nGuzCd?usp=sharing) (same to BTCV preprocessed data). After extraction, find the file at:\n `../model/vit_checkpoint/imagenet21k/R50+ViT-B_16.npz`\n \n ### 2. Prepare data (All data are available!)"
+    }
+  ]
+}
