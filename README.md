@@ -52,6 +52,7 @@ Chạy từ thư mục repo sau khi chuẩn bị dữ liệu:
 .venv\Scripts\python.exe -m scripts.eda --data-dir data --output results/eda
 .venv\Scripts\python.exe -m scripts.train_pixel_model --data-dir data --output results/pixel_classifier --epochs 2 --seed 406
 .venv\Scripts\python.exe -m scripts.evaluate --data-dir data --method both --split test --normalization unit --per-annotation --output results/comparison_test
+New-Item -ItemType Directory -Force -Path docs | Out-Null
 .venv\Scripts\python.exe -m scripts.analyze_results --output results/analysis
 ```
 
