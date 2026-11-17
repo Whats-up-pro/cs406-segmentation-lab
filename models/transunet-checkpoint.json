@@ -1,0 +1,22 @@
+{
+  "file_name": "TransUNet_R50_ViT_B_16_all_best_model.pth",
+  "relative_path": "data/TransUNet_R50_ViT_B_16_all_best_model.pth",
+  "bytes": 421301094,
+  "sha256": "6df81c63fab9936d8d90e79bfea0264c11516e82d981c70ab62c89758793a508",
+  "architecture": "R50-ViT-B_16",
+  "output_channels": 1,
+  "input_size": [224, 224],
+  "normalization_default": "unit",
+  "original_training_normalization_verified": false,
+  "repository": "Whats-up-pro/cs406-segmentation-lab",
+  "release_tag": "checkpoint-v1",
+  "download_url": "https://github.com/Whats-up-pro/cs406-segmentation-lab/releases/download/checkpoint-v1/TransUNet_R50_ViT_B_16_all_best_model.pth",
+  "origin": "Checkpoint supplied with the course project resources; not trained from scratch by this code release.",
+  "competition_submission_identity_verified": false,
+  "training_data_history_verified": false,
+  "references": [
+    "https://github.com/velvinnn/DermaVQA",
+    "https://www.imageclef.org/2025/medical/mediqa",
+    "https://github.com/wyim/ImageCLEF-MAGIC-2025"
+  ]
+}

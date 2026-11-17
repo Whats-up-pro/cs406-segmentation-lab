@@ -2,7 +2,7 @@
 
 Ứng dụng local phục vụ đồ án Xử lý ảnh và Ứng dụng: khám phá ảnh và nhãn, phân đoạn nhị phân bằng LAB–Otsu, Logistic pixel hoặc TransUNet, rồi đối chiếu dự đoán với nhãn tham chiếu.
 
-Repo này chứa mã backend, frontend, huấn luyện, đánh giá, EDA và kiểm thử. Dataset, trọng số, kết quả thực nghiệm, báo cáo và slide được quản lý riêng.
+Repo này chứa mã backend, frontend, huấn luyện, đánh giá, EDA và kiểm thử. Checkpoint TransUNet được quản lý qua GitHub Releases; dataset, kết quả thực nghiệm, báo cáo và slide được quản lý riêng.
 
 ## Quick start
 
@@ -22,7 +22,7 @@ Sau khi cài thư viện, cũng có thể khởi động bằng `./start.ps1`.
 
 ## Chuẩn bị dữ liệu và mô hình
 
-Lấy dữ liệu và checkpoint từ người cung cấp tài nguyên đồ án, sau đó đặt vào cấu trúc sau. Repo không tự tải tài nguyên hoặc cung cấp link dataset chưa được xác minh.
+Nguồn tham khảo gồm [DermaVQA](https://github.com/velvinnn/DermaVQA), [DermaVQA-DAS / MEDIQA-MAGIC 2025](https://www.imageclef.org/2025/medical/mediqa) và [tài nguyên, mã đánh giá năm 2025](https://github.com/wyim/ImageCLEF-MAGIC-2025). Xem [đối chiếu nguồn dữ liệu và checkpoint](docs/data-and-checkpoint.md) để phân biệt các phiên bản và kết quả cuộc thi. Lấy bản dữ liệu đã chuẩn bị từ người cung cấp tài nguyên đồ án, sau đó đặt vào cấu trúc sau:
 
 ```text
 data/
@@ -40,7 +40,15 @@ data/
 .venv\Scripts\python.exe -m pip install -r requirements-ml.txt
 ```
 
-Checkpoint được dùng trong đồ án có SHA-256 `6df81c63fab9936d8d90e79bfea0264c11516e82d981c70ab62c89758793a508`. Có thể dùng biến môi trường `TRANSUNET_CHECKPOINT` để chỉ định đường dẫn khác. `TRANSUNET_DEVICE` nhận `auto`, `cpu` hoặc `cuda`; `TRANSUNET_CPU_THREADS` mặc định là 4.
+Checkpoint có kích thước **421.301.094 byte**; thông tin kiểm chứng nằm trong [manifest mô hình](models/transunet-checkpoint.json). File lớn hơn giới hạn 100 MiB của Git thông thường nên được phát hành dưới dạng [release asset](https://github.com/Whats-up-pro/cs406-segmentation-lab/releases/tag/checkpoint-v1), thay vì commit trực tiếp file `.pth`. Khi asset đã được phát hành, tải bằng GitHub CLI:
+
+```powershell
+New-Item -ItemType Directory -Force -Path data | Out-Null
+gh release download checkpoint-v1 --repo Whats-up-pro/cs406-segmentation-lab --pattern TransUNet_R50_ViT_B_16_all_best_model.pth --dir data
+Get-FileHash -Algorithm SHA256 data/TransUNet_R50_ViT_B_16_all_best_model.pth
+```
+
+SHA-256 cần khớp `6df81c63fab9936d8d90e79bfea0264c11516e82d981c70ab62c89758793a508`. Có thể dùng biến môi trường `TRANSUNET_CHECKPOINT` để chỉ định đường dẫn khác. `TRANSUNET_DEVICE` nhận `auto`, `cpu` hoặc `cuda`; `TRANSUNET_CPU_THREADS` mặc định là 4.
 
 Logistic pixel dùng model tại `results/pixel_classifier/model.json`. Tạo model bằng lệnh huấn luyện bên dưới, hoặc lấy model đã học từ người cung cấp tài nguyên. Khi chưa có trọng số, chọn LAB–Otsu trong demo.
 
@@ -101,4 +109,6 @@ Các route trình chiếu và tải báo cáo chỉ hoạt động khi bộ tài
 
 Kiến trúc TransUNet được điều chỉnh từ [Beckschen/TransUNet](https://github.com/Beckschen/TransUNet), revision `02ef0010b36eb8328b5e689eadaf613602edf9b8`. Bản sao nguồn, giấy phép Apache-2.0 và mô tả thay đổi được giữ tại [NOTICE](third_party/TransUNet/NOTICE.md) và [LICENSE upstream](third_party/TransUNet/LICENSE). Giấy phép nguồn upstream không xác định quyền phân phối dataset hoặc checkpoint riêng.
 
-Nguồn, ý nghĩa nhãn, quyền sử dụng dữ liệu và lịch sử huấn luyện checkpoint chưa được xác nhận đầy đủ. Chuẩn hóa TransUNet mặc định là RGB/255; đây là lựa chọn thực nghiệm, chưa được xác nhận là công thức huấn luyện gốc. Đồ án chưa được thẩm định để sử dụng trong chẩn đoán y tế.
+Đội **Anastasia** đứng đầu bảng Segmentation Task Results của MEDIQA-MAGIC 2025 với Jaccard **0,645774234**, Dice **0,784766**, theo [bảng kết quả chính thức](https://www.imageclef.org/2025/medical/mediqa). Hai lần nộp của `khoingotuantu` bạn đọc có thể đối chiếu trong [ghi chú nguồn](docs/data-and-checkpoint.md). Đây là kết quả của đội dự thi; mối liên hệ giữa checkpoint cục bộ với các lần nộp đó còn cần xác nhận.
+
+Bản dữ liệu cục bộ có số lượng khác bản segmentation 2025 công bố; phiên bản, cách chọn ảnh/hợp nhất nhãn, quyền sử dụng và lịch sử huấn luyện checkpoint chưa được xác nhận đầy đủ. Chuẩn hóa TransUNet mặc định là RGB/255; đây là lựa chọn thực nghiệm, chưa được xác nhận là công thức huấn luyện gốc. Đồ án chưa được thẩm định để sử dụng trong chẩn đoán y tế.
