@@ -1,0 +1,1317 @@
+{
+  "schema_version": 1,
+  "automatic_grade": false,
+  "updated": "2026-11-19",
+  "reference": {
+    "root": "project",
+    "path": "CS406_Yeu_cau_do_an_Xu_ly_anh_va_Ung_dung.docx",
+    "workspace_original": "D:/HK1_2026-2027/CS406/Project/CS406_Yeu_cau_do_an_Xu_ly_anh_va_Ung_dung.docx",
+    "sections": 18
+  },
+  "interpretation": [
+    "Atomic evidence map, not an automatic grade or a prediction of examiner judgment.",
+    "mandatory follows the DOCX; optional records encouraged extensions without making them mandatory.",
+    "human_confirmation marks a requirement whose truth must be confirmed by an identified human; the agent must not manufacture an attestation.",
+    "evidence_available means declared files are available for review, not that their scientific claims or document layout have been automatically certified.",
+    "pending/planned remain unresolved even when a file already exists; evidence checks never silently promote a ledger state.",
+    "The DOCX permits pretrained models and does not require full TransUNet fine-tuning, a new architecture or a high score.",
+    "The supplied TransUNet checkpoint is a descriptive reference with unknown training exposure. Logistic already has a controlled train-only experiment.",
+    "The original test has already been inspected for failure analysis; new train/validation-only selection must not be described as restoring a never-observed test.",
+    "Network link verification, visual rendering and clean installation require separate recorded reviews; file presence alone is insufficient."
+  ],
+  "requirements": [
+    {
+      "id": "s01-applied-image-task",
+      "clause": 1,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Vận dụng xử lý ảnh để giải quyết một bài toán thực tế cụ thể.",
+      "acceptance": "Introduction states the image task, motivation and a measurable objective.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        }
+      ]
+    },
+    {
+      "id": "s02-team-membership",
+      "clause": 2,
+      "kind": "human_confirmation",
+      "state": "confirmed",
+      "statement": "Xác nhận thành viên thực tế của nhóm và giới hạn tối đa bốn người.",
+      "acceptance": "Student confirms actual membership and identifiers; no inferred identity is presented as confirmed.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "config/team.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/team_size",
+              "equals": 4
+            },
+            {
+              "pointer": "/placeholder_count",
+              "equals": 0
+            }
+          ]
+        },
+        {
+          "root": "project",
+          "path": "docs/confirmations/team.json",
+          "type": "confirmation",
+          "checks": [
+            {
+              "pointer": "/within_four_members",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s02-reused-source-attribution",
+      "clause": 2,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Ghi rõ nguồn mô hình và mã nguồn sử dụng lại.",
+      "acceptance": "Report cites the reused architecture and repository preserves upstream revision, license and modifications.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "third_party/TransUNet/NOTICE.md"
+        },
+        {
+          "root": "repo",
+          "path": "third_party/TransUNet/LICENSE"
+        },
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        }
+      ]
+    },
+    {
+      "id": "s02-work-beyond-rerun",
+      "clause": 2,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Có đóng góp thực nghiệm và triển khai vượt quá tải mô hình rồi chạy lại.",
+      "acceptance": "Baseline, controlled Logistic training, multi-annotation protocol, error analysis and live predictor are documented.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "backend/baseline.py"
+        },
+        {
+          "root": "project",
+          "path": "results/pixel_classifier/manifest.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "complete"
+            }
+          ]
+        },
+        {
+          "root": "project",
+          "path": "results/analysis/summary.json",
+          "type": "json"
+        }
+      ]
+    },
+    {
+      "id": "s03-image-analysis-component",
+      "clause": 3,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Đề tài có thành phần xử lý hoặc phân tích ảnh rõ ràng.",
+      "acceptance": "RGB pixels are transformed into a binary segmentation output by implemented image methods.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "backend/baseline.py"
+        },
+        {
+          "root": "repo",
+          "path": "backend/inference.py"
+        }
+      ]
+    },
+    {
+      "id": "s04-input",
+      "clause": 4,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Phát biểu đầu vào cụ thể.",
+      "acceptance": "The input is an RGB image; training/reference masks are distinguished from predictor input.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        },
+        {
+          "root": "repo",
+          "path": "backend/dataset.py"
+        }
+      ]
+    },
+    {
+      "id": "s04-output",
+      "clause": 4,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Phát biểu đầu ra cụ thể.",
+      "acceptance": "A binary foreground/background mask and its spatial size are defined, without inventing a diagnosis.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        }
+      ]
+    },
+    {
+      "id": "s04-objective",
+      "clause": 4,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Nêu mục tiêu có thể đánh giá được thay vì chỉ tên mô hình.",
+      "acceptance": "The report formulates segmentation and method-comparison questions with quantitative evaluation.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        }
+      ]
+    },
+    {
+      "id": "s04-processing-evaluation-chain",
+      "clause": 4,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Trình bày chuỗi Input → Processing/Model → Output → Evaluation.",
+      "acceptance": "Predictor processing and reference-mask evaluation have separate, explicit roles.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        },
+        {
+          "root": "repo",
+          "path": "scripts/evaluate.py"
+        }
+      ]
+    },
+    {
+      "id": "s05-dataset-source",
+      "clause": 5,
+      "kind": "human_confirmation",
+      "state": "pending",
+      "statement": "Xác nhận nguồn và phiên bản chính xác của dữ liệu cục bộ.",
+      "acceptance": "Resource owner supplies an attributable source/version and mapping explaining local filtering and mask transformations; candidate-source similarity alone is insufficient.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "docs/data-and-checkpoint.md"
+        },
+        {
+          "root": "project",
+          "path": "docs/confirmations/dataset-source.json",
+          "type": "confirmation",
+          "checks": [
+            {
+              "pointer": "/local_version_verified",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s05-image-mask-counts",
+      "clause": 5,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Thống kê số ảnh và số mặt nạ của từng tập.",
+      "acceptance": "Inventory records 2179/157/295 images and 2179/157/885 masks for the supplied version.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/data_audit.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/splits/train/images",
+              "equals": 2179
+            },
+            {
+              "pointer": "/splits/valid/images",
+              "equals": 157
+            },
+            {
+              "pointer": "/splits/test/images",
+              "equals": 295
+            },
+            {
+              "pointer": "/splits/test/masks",
+              "equals": 885
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s05-classes-and-samples",
+      "clause": 5,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Nêu hai lớp pixel và số mẫu/phân bố của chúng.",
+      "acceptance": "Foreground/background are defined separately from disease labels; per-mask foreground fractions and image counts expose imbalance.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        },
+        {
+          "root": "project",
+          "path": "results/eda/per_image.csv"
+        },
+        {
+          "root": "project",
+          "path": "results/eda/per_annotation.csv"
+        }
+      ]
+    },
+    {
+      "id": "s05-native-resolution",
+      "clause": 5,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Mô tả độ phân giải ảnh gốc và độ phân giải xử lý.",
+      "acceptance": "Native image dimensions are inventoried; 256-square evaluation and checkpoint input resizing are disclosed as processing choices.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/eda/per_image.csv"
+        },
+        {
+          "root": "project",
+          "path": "docs/eda.md"
+        }
+      ]
+    },
+    {
+      "id": "s05-data-characteristics",
+      "clause": 5,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Mô tả đặc điểm, chất lượng và độ mất cân bằng dữ liệu.",
+      "acceptance": "EDA covers size, foreground coverage, basic image quality, duplicates and annotation disagreement.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/eda/summary.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/totals/images_decoded",
+              "equals": 2631
+            },
+            {
+              "pointer": "/totals/masks_decoded",
+              "equals": 3221
+            },
+            {
+              "pointer": "/totals/nonbinary_masks",
+              "equals": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s05-annotation-protocol",
+      "clause": 5,
+      "kind": "human_confirmation",
+      "state": "pending",
+      "statement": "Xác nhận ý nghĩa nhãn, cách gán nhãn và biến đổi nhãn của bản cục bộ.",
+      "acceptance": "Resource owner identifies foreground semantics, annotation procedure and how multiple original labels became one local train/valid mask.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/confirmations/annotation-protocol.json",
+          "type": "confirmation",
+          "checks": [
+            {
+              "pointer": "/label_transform_verified",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s05-data-examples",
+      "clause": 5,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Có ví dụ ảnh và nhãn thực tế.",
+      "acceptance": "Illustrations show source images and all/reference annotation behavior with traceable sample IDs.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/eda/overview.png"
+        },
+        {
+          "root": "project",
+          "path": "results/eda/outliers.png"
+        }
+      ]
+    },
+    {
+      "id": "s05-explicit-splits",
+      "clause": 5,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Có Training/Validation/Test và quy tắc sử dụng tách biệt.",
+      "acceptance": "Split membership is recorded; only train updates Logistic coefficients and only valid selects its threshold.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/pixel_classifier/manifest.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/protocol/optimizer_splits",
+              "equals": [
+                "train"
+              ]
+            },
+            {
+              "pointer": "/selection/split",
+              "equals": "valid"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s05-related-image-leakage-review",
+      "clause": 5,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Kiểm tra ảnh trùng và ảnh có quan hệ gần xuyên tập, ghi rõ giới hạn định danh.",
+      "acceptance": "All supplied images and cross-split pairs are audited under saved hash thresholds, with review of any flagged candidates; this run finds none. Encounter IDs are not asserted to be verified patients and a clean candidate audit is not proof of independence.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/data_audit.json",
+          "type": "json"
+        },
+        {
+          "root": "project",
+          "path": "results/completion/leakage/summary.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/counts/decoded_images",
+              "equals": 2631
+            },
+            {
+              "pointer": "/counts/cross_split_pairs_compared",
+              "equals": 1031223
+            },
+            {
+              "pointer": "/counts/cross_split_exact_groups",
+              "equals": 0
+            },
+            {
+              "pointer": "/counts/cross_split_perceptual_candidates",
+              "equals": 0
+            },
+            {
+              "pointer": "/decode_errors",
+              "equals": []
+            },
+            {
+              "pointer": "/protocol/labels_read",
+              "equals": false
+            },
+            {
+              "pointer": "/protocol/files_modified",
+              "equals": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s05-data-rights-confirmation",
+      "clause": 5,
+      "kind": "optional",
+      "state": "pending",
+      "statement": "Lưu điều kiện sử dụng và minh họa dữ liệu từ chủ tài nguyên.",
+      "acceptance": "Permissions are attributed to the actual data rights source; architecture-source license is not substituted for dataset rights.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/confirmations/data-rights.json",
+          "type": "confirmation"
+        }
+      ]
+    },
+    {
+      "id": "s06-complete-method-pipeline",
+      "clause": 6,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Mô tả pipeline hoàn chỉnh cho từng phương pháp đã báo cáo.",
+      "acceptance": "Preprocessing, predictor inputs, score generation and thresholding are specified for LAB, Logistic and supplied TransUNet.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        },
+        {
+          "root": "project",
+          "path": "docs/model-notes.md"
+        }
+      ]
+    },
+    {
+      "id": "s06-preprocessing",
+      "clause": 6,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Giải thích resize, chuẩn hóa và xử lý nhãn.",
+      "acceptance": "Image/mask interpolation, fixed scaling, consensus and aspect-ratio limitations are explicit.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/experiments.md"
+        },
+        {
+          "root": "repo",
+          "path": "backend/inference.py"
+        }
+      ]
+    },
+    {
+      "id": "s06-algorithm-architecture",
+      "clause": 6,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Giải thích thuật toán, kiến trúc và các tham số quan trọng.",
+      "acceptance": "LAB threshold/morphology rules, Logistic features and TransUNet encoder/attention/decoder roles are documented with sources.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        },
+        {
+          "root": "project",
+          "path": "docs/pixel-classifier.md"
+        }
+      ]
+    },
+    {
+      "id": "s06-training-recipe",
+      "clause": 6,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Ghi loss, optimizer, learning-rate rule, epoch, seed và augmentation của thí nghiệm tự huấn luyện.",
+      "acceptance": "Completed Logistic manifest records the actual SGD/log-loss recipe and two full passes; absent original TransUNet recipe is not invented.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/pixel_classifier/manifest.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "complete"
+            },
+            {
+              "pointer": "/parameters/epochs",
+              "equals": 2
+            },
+            {
+              "pointer": "/parameters/seed",
+              "equals": 406
+            }
+          ]
+        },
+        {
+          "root": "project",
+          "path": "docs/pixel-classifier.md"
+        }
+      ]
+    },
+    {
+      "id": "s06-new-compact-recipe",
+      "clause": 6,
+      "kind": "optional",
+      "state": "planned",
+      "statement": "Bổ sung phương pháp phân đoạn gọn huấn luyện từ khởi tạo ngẫu nhiên.",
+      "acceptance": "Compact-model code, frozen protocol, completed full-data history and genuine trained weights support every new reported result.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "backend/compact_model.py"
+        },
+        {
+          "root": "repo",
+          "path": "scripts/train_compact.py"
+        },
+        {
+          "root": "project",
+          "path": "results/completion/experiment-summary.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "complete"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s07-appropriate-baseline",
+      "clause": 7,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Có ít nhất một baseline hoặc phương pháp đối chứng phù hợp.",
+      "acceptance": "A label-free LAB–Otsu/morphology predictor provides a justified image-processing baseline.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "backend/baseline.py"
+        },
+        {
+          "root": "project",
+          "path": "results/baseline_test/summary.json",
+          "type": "json"
+        }
+      ]
+    },
+    {
+      "id": "s07-comparison-table",
+      "clause": 7,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "So sánh phương pháp bằng cùng tập và giao thức độ đo.",
+      "acceptance": "Three methods have saved per-image results and a report comparison using the same supplied test reference and resolution.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/comparison_test/per_image.csv"
+        },
+        {
+          "root": "project",
+          "path": "results/pixel_classifier/per_image.csv"
+        },
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        }
+      ]
+    },
+    {
+      "id": "s08-controlled-main-experiment",
+      "clause": 8,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Có thực nghiệm test không tham gia cập nhật tham số hoặc lựa chọn cấu hình.",
+      "acceptance": "Logistic uses train-only optimization and validation-only threshold selection, saved before test discovery; test exposure history of supplied TransUNet is separately unresolved.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/pixel_classifier/manifest.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "complete"
+            },
+            {
+              "pointer": "/protocol/optimizer_splits",
+              "equals": [
+                "train"
+              ]
+            },
+            {
+              "pointer": "/selection/split",
+              "equals": "valid"
+            },
+            {
+              "pointer": "/test/images",
+              "equals": 295
+            }
+          ]
+        },
+        {
+          "root": "repo",
+          "path": "tests/test_pixel_model.py"
+        }
+      ]
+    },
+    {
+      "id": "s08-full-test-comparison",
+      "clause": 8,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Đánh giá đầy đủ và so sánh ít nhất một đối chứng.",
+      "acceptance": "The recorded comparison includes all 295 supplied test images for both LAB and TransUNet; result failures and protocol limitations are disclosed.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/comparison_test/summary.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/limited_run",
+              "equals": false
+            },
+            {
+              "pointer": "/methods/baseline/sample_count",
+              "equals": 295
+            },
+            {
+              "pointer": "/methods/transunet/sample_count",
+              "equals": 295
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s08-result-interpretation",
+      "clause": 8,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Phân tích khác biệt phương pháp, nhóm khó và giả thuyết nguyên nhân sai.",
+      "acceptance": "Report discusses negative Logistic results, foreground-size strata, annotation disagreement and hypotheses without labeling descriptive associations causal.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/failure-analysis.md"
+        },
+        {
+          "root": "project",
+          "path": "results/analysis/summary.json",
+          "type": "json"
+        }
+      ]
+    },
+    {
+      "id": "s08-ablation",
+      "clause": 8,
+      "kind": "optional",
+      "state": "planned",
+      "statement": "Thực hiện ablation có kiểm soát để đo đóng góp từng thành phần.",
+      "acceptance": "Saved, predefined loss-by-augmentation configurations are trained under the same budget; tables derive from genuine completed runs.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "config/experiments/compact_ablation.json",
+          "type": "json"
+        },
+        {
+          "root": "project",
+          "path": "results/completion/ablation-summary.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "complete"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s08-checkpoint-history",
+      "clause": 8,
+      "kind": "optional",
+      "state": "pending",
+      "statement": "Xác minh lịch sử checkpoint TransUNet nếu muốn gọi test của nó độc lập.",
+      "acceptance": "Actual checkpoint author supplies training splits, preprocessing, logs and weight identity. Without this, keep it descriptive and retain the controlled self-trained experiment.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "models/transunet-checkpoint.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/training_data_history_verified",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s09-segmentation-metrics",
+      "clause": 9,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Báo Dice, IoU, Pixel Accuracy và Precision/Recall phù hợp phân đoạn.",
+      "acceptance": "Five metrics are calculated from predictions/reference masks and saved per image as well as in summaries.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "backend/metrics.py"
+        },
+        {
+          "root": "project",
+          "path": "results/comparison_test/summary.json",
+          "type": "json"
+        },
+        {
+          "root": "project",
+          "path": "results/comparison_test/per_image.csv"
+        }
+      ]
+    },
+    {
+      "id": "s09-metric-meaning",
+      "clause": 9,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Giải thích công thức, cách lấy trung bình và trường hợp mask rỗng.",
+      "acceptance": "Report and metric tests explain overlap, FP/FN, macro averaging and explicit empty-mask conventions.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        },
+        {
+          "root": "repo",
+          "path": "tests/test_metrics.py"
+        }
+      ]
+    },
+    {
+      "id": "s09-imbalance",
+      "clause": 9,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Không chỉ báo Accuracy trên dữ liệu mất cân bằng.",
+      "acceptance": "Dice/IoU and foreground FP/FN are central, and background-dominated accuracy is discussed as a limitation.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        },
+        {
+          "root": "project",
+          "path": "docs/defense-guide.md"
+        }
+      ]
+    },
+    {
+      "id": "s10-success-cases",
+      "clause": 10,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Trình bày trường hợp xử lý tốt.",
+      "acceptance": "A traceable high-overlap example displays input, reference and real method predictions.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/analysis/cases/IMG_ENC00238_00003.png"
+        },
+        {
+          "root": "project",
+          "path": "results/analysis/selected_cases.json",
+          "type": "json"
+        }
+      ]
+    },
+    {
+      "id": "s10-partial-failures",
+      "clause": 10,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Trình bày trường hợp xử lý chưa tốt.",
+      "acceptance": "A partial/undercoverage failure displays FP/FN and explains how a mean score can hide it.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/analysis/cases/IMG_ENC00192_00005.png"
+        },
+        {
+          "root": "project",
+          "path": "docs/failure-analysis.md"
+        }
+      ]
+    },
+    {
+      "id": "s10-complete-failures",
+      "clause": 10,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Trình bày trường hợp xử lý sai hoàn toàn.",
+      "acceptance": "A zero-Dice example is retained and traced to predictions, instead of excluding it or substituting reference masks.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/analysis/cases/IMG_ENC00084_00003.png"
+        },
+        {
+          "root": "project",
+          "path": "results/analysis/selected_cases.csv"
+        }
+      ]
+    },
+    {
+      "id": "s10-failure-explanation",
+      "clause": 10,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Phân tích nguyên nhân khả dĩ và giới hạn chứng minh nguyên nhân.",
+      "acceptance": "Observations are separated from hypotheses about color, small regions, resizing and label uncertainty, with proposed verifiable remedies.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/failure-analysis.md"
+        },
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        }
+      ]
+    },
+    {
+      "id": "s11-external-generalization",
+      "clause": 11,
+      "kind": "optional",
+      "state": "planned",
+      "statement": "Kiểm thử ngoài nguồn dữ liệu ban đầu với phạm vi kết luận rõ ràng.",
+      "acceptance": "Legitimate external images/masks, source/license manifest and frozen-parameter evaluation support a stress test; modality/semantic shifts and no clinical validation are explicit.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/completion/external/manifest.json",
+          "type": "json"
+        },
+        {
+          "root": "project",
+          "path": "results/completion/external/summary.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "complete"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s12-real-predictor",
+      "clause": 12,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Demo sử dụng phương pháp thật của đồ án.",
+      "acceptance": "API calls real predictors; missing model errors do not silently substitute masks or fabricated scores.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "backend/main.py"
+        },
+        {
+          "root": "repo",
+          "path": "tests/test_api.py"
+        },
+        {
+          "root": "repo",
+          "path": "tests/test_inference.py"
+        }
+      ]
+    },
+    {
+      "id": "s12-input-process-display",
+      "clause": 12,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Có luồng tải/chọn ảnh, xử lý và hiển thị kết quả.",
+      "acceptance": "Frontend supports source image, prediction/overlay, selected annotations and mask download; upload without reference has no invented metric.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "frontend/index.html"
+        },
+        {
+          "root": "repo",
+          "path": "frontend/app.js"
+        },
+        {
+          "root": "repo",
+          "path": "tests/test_api.py"
+        }
+      ]
+    },
+    {
+      "id": "s12-final-live-review",
+      "clause": 12,
+      "kind": "mandatory",
+      "state": "planned",
+      "statement": "Kiểm chứng demo cuối cùng và mô hình bổ sung bằng lần chạy thật.",
+      "acceptance": "Recorded browser/API checks cover a genuine inference, original-size PNG, absent-model failure and upload without ground truth on the final source revision.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/completion/demo-review.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s13-nine-report-sections",
+      "clause": 13,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Báo cáo có đủ chín phần quy định và References.",
+      "acceptance": "Introduction, Related Work, Dataset, Methodology, Setup, Results, Failure Analysis, Demo and Conclusion are all present.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        },
+        {
+          "root": "project",
+          "path": "deliverables/CS406_Report.docx"
+        },
+        {
+          "root": "project",
+          "path": "deliverables/CS406_Report.pdf"
+        }
+      ]
+    },
+    {
+      "id": "s13-inline-citations",
+      "clause": 13,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Tài liệu tham khảo được cite trong nội dung.",
+      "acceptance": "Method and source claims link to the matching report reference entries, with no invented checkpoint authorship.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/report.md"
+        }
+      ]
+    },
+    {
+      "id": "s13-final-render-review",
+      "clause": 13,
+      "kind": "mandatory",
+      "state": "planned",
+      "statement": "Bộ báo cáo cuối cùng nhất quán với thực nghiệm và có bố cục được rà soát.",
+      "acceptance": "Final DOCX/PDF hashes and full-page visual review confirm current result tables, updated TOC/caption pages, no editorial note and confirmed cover metadata.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/completion/document-review.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "passed"
+            },
+            {
+              "pointer": "/toc_verified",
+              "equals": true
+            },
+            {
+              "pointer": "/editorial_notes_removed",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s14-code-structure",
+      "clause": 14,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Source code có cấu trúc rõ ràng.",
+      "acceptance": "Backend, frontend, train/evaluation scripts and tests have explicit responsibilities.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "README.md"
+        },
+        {
+          "root": "repo",
+          "path": "backend/main.py"
+        },
+        {
+          "root": "repo",
+          "path": "scripts/evaluate.py"
+        }
+      ]
+    },
+    {
+      "id": "s14-stepwise-readme",
+      "clause": 14,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "README hướng dẫn Installation → Dataset → Training → Testing → Demo.",
+      "acceptance": "Commands identify working directory, environment, required assets and expected server address.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "README.md"
+        },
+        {
+          "root": "repo",
+          "path": "start.ps1"
+        }
+      ]
+    },
+    {
+      "id": "s14-environment",
+      "clause": 14,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Có requirements và thông tin môi trường thực nghiệm.",
+      "acceptance": "Runtime, ML and developer dependencies are separated; saved experiment environment records actual versions.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "requirements.txt"
+        },
+        {
+          "root": "repo",
+          "path": "requirements-ml.txt"
+        },
+        {
+          "root": "repo",
+          "path": "requirements-dev.txt"
+        },
+        {
+          "root": "project",
+          "path": "results/pixel_classifier/manifest.json",
+          "type": "json"
+        }
+      ]
+    },
+    {
+      "id": "s14-training-inference-separation",
+      "clause": 14,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Tách training và inference khi phù hợp.",
+      "acceptance": "Training entry points and predictors are separate; saved Logistic inference loads the learned JSON without retraining.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "scripts/train_pixel_model.py"
+        },
+        {
+          "root": "repo",
+          "path": "backend/pixel_model.py"
+        },
+        {
+          "root": "repo",
+          "path": "scripts/train.py"
+        },
+        {
+          "root": "repo",
+          "path": "backend/inference.py"
+        }
+      ]
+    },
+    {
+      "id": "s14-checkpoint-asset",
+      "clause": 14,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Checkpoint cung cấp có đường dẫn, kích thước và hash kiểm chứng.",
+      "acceptance": "Local supplied checkpoint exactly matches the release manifest; remote accessibility is a separate distribution check.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "models/transunet-checkpoint.json",
+          "type": "checkpoint",
+          "asset_root": "project"
+        }
+      ]
+    },
+    {
+      "id": "s14-asset-access-and-clean-package",
+      "clause": 14,
+      "kind": "mandatory",
+      "state": "planned",
+      "statement": "Giảng viên có thể lấy tài nguyên và chạy bộ nộp trên bản source sạch.",
+      "acceptance": "A saved clean-install/package review verifies data access instructions, live checkpoint/artifact links, model hashes and documented execution; source archive excludes raw data, private files and model binaries.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/completion/package-review.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "passed"
+            },
+            {
+              "pointer": "/clean_install_verified",
+              "equals": true
+            },
+            {
+              "pointer": "/asset_links_verified",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s15-presentation-logic",
+      "clause": 15,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Trình bày Problem → Data → Method → Experiments → Results → Demo → Limitations.",
+      "acceptance": "Slides and speaking guide cover the required story and emphasize actual work and evidence.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "deliverables/CS406_Defense.pptx"
+        },
+        {
+          "root": "project",
+          "path": "deliverables/CS406_Defense.pdf"
+        },
+        {
+          "root": "project",
+          "path": "docs/defense-guide.md"
+        }
+      ]
+    },
+    {
+      "id": "s15-actual-contributions",
+      "clause": 15,
+      "kind": "human_confirmation",
+      "state": "pending",
+      "statement": "Thành viên xác nhận phần thực sự đã làm và các quyết định của nhóm.",
+      "acceptance": "An attributed contribution record reflects actual work rather than suggested roles generated for rehearsal.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/confirmations/contributions.json",
+          "type": "confirmation"
+        }
+      ]
+    },
+    {
+      "id": "s15-member-understanding",
+      "clause": 15,
+      "kind": "human_confirmation",
+      "state": "pending",
+      "statement": "Mọi thành viên hiểu đồ án và có khả năng trả lời câu hỏi.",
+      "acceptance": "Members rehearse and confirm understanding of the task, split/leakage, model, metrics, contributions and failure cases; an answer guide alone cannot establish competence.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/defense-guide.md"
+        },
+        {
+          "root": "project",
+          "path": "docs/confirmations/defense-rehearsal.json",
+          "type": "confirmation",
+          "checks": [
+            {
+              "pointer": "/all_members_participated",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s16-rubric-not-grade",
+      "clause": 16,
+      "kind": "optional",
+      "state": "evidence_available",
+      "statement": "Dùng trọng số rubric để ưu tiên công việc, không tự quy đổi file thành điểm.",
+      "acceptance": "Status ledger acknowledges human grading and that leakage, copied source, lack of understanding or non-reproducibility may be serious independent issues.",
+      "evidence": [
+        {
+          "root": "repo",
+          "path": "docs/completion-status.md"
+        }
+      ]
+    },
+    {
+      "id": "s17-advanced-ablations-seeds",
+      "clause": 17,
+      "kind": "optional",
+      "state": "planned",
+      "statement": "Nâng mức nghiên cứu bằng cải tiến pipeline, ablation và nhiều seed.",
+      "acceptance": "Four predefined compact-model ablations and three declared seeds have genuine complete histories; aggregate and seed variation are reported without claiming larger models imply better projects.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "results/completion/experiment-summary.json",
+          "type": "json",
+          "checks": [
+            {
+              "pointer": "/status",
+              "equals": "complete"
+            }
+          ]
+        },
+        {
+          "root": "project",
+          "path": "docs/experiments-completion.md"
+        }
+      ]
+    },
+    {
+      "id": "s17-full-transunet-training",
+      "clause": 17,
+      "kind": "optional",
+      "state": "not_applicable",
+      "statement": "Không tự thêm fine-tuning toàn bộ TransUNet thành điều kiện bắt buộc.",
+      "acceptance": "The actual completed recipe is stated honestly; a one-batch head-only smoke is never described as full fine-tuning.",
+      "reason": "DOCX sections 2 and 7 allow pretrained models and a simple appropriate baseline; compact controlled training is the selected enhancement on CPU.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/training.md"
+        }
+      ]
+    },
+    {
+      "id": "s18-defense-checklist",
+      "clause": 18,
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Chuẩn bị câu trả lời cho checklist trước báo cáo.",
+      "acceptance": "Defense guide covers input/output, data origin/splits, leakage, baseline, metrics, improvement, failures and new inputs; unresolved factual answers remain explicit.",
+      "evidence": [
+        {
+          "root": "project",
+          "path": "docs/defense-guide.md"
+        },
+        {
+          "root": "repo",
+          "path": "docs/completion-status.md"
+        }
+      ]
+    }
+  ]
+}

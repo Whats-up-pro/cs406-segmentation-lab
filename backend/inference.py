@@ -28,7 +28,9 @@ NORMALIZATIONS = ("unit", "imagenet")
 
 
 def _checkpoint_path() -> Path:
-    return Path(os.environ.get("TRANSUNET_CHECKPOINT", str(_DEFAULT_CHECKPOINT))).expanduser().resolve()
+    data_directory = os.environ.get('SEGMENTATION_DATA_DIR')
+    fallback = Path(data_directory)/_DEFAULT_CHECKPOINT.name if data_directory else _DEFAULT_CHECKPOINT
+    return Path(os.environ.get("TRANSUNET_CHECKPOINT", str(fallback))).expanduser().resolve()
 
 
 def get_model_status() -> dict:

@@ -1,0 +1,49 @@
+# SDD ledger — plan: docs/superpowers/plans/2026-11-19-course-completion.md
+
+Original requirement: `D:/HK1_2026-2027/CS406/Project/CS406_Yeu_cau_do_an_Xu_ly_anh_va_Ung_dung.docx`.
+
+2026-11-19: User explicitly authorized continuous completion and substantial enhancement of the whole project. Goal active; no invented grading/performance/provenance claims.
+
+Ruling: Work on a dedicated branch in the already separate source repo, rather than creating another worktree — preserves original Project data/artifacts and avoids redundant copies in a workspace with ~17.5GiB free. Final source integration back into demo/artifact builders must be checked explicitly.
+
+Ruling: Use a compact model trained from scratch as the controlled primary learned experiment — CPU-only environment and unknown supplied checkpoint history make this more defensible than treating checkpoint inference as independent test evidence. TransUNet remains a reference; original weights unchanged.
+
+Ruling: Implement inline with read-only parallel rubric/provenance research and independent final review — user requested continued work without repeated approvals; no paid compute or external purchases authorized.
+
+Pre-flight interfaces: Task2 frozen selection consumed by Task3; Task3 immutable summaries consumed by Task4 UI and Task5 report/slide builders; Task1 requirement verifier and provenance used again at Task6. Original filenames and metric definitions are binding across all consumers.
+
+Pending human inputs requested asynchronously: confirm member/name/MSSV/class/GVHD and original ZIP/checkpoint provider; optional GPU environment. Continue independent technical work while pending.
+
+Verified release: `checkpoint-v1` asset421301094 bytes, GitHub digest matches SHA256 `6df81c63fab9936d8d90e79bfea0264c11516e82d981c70ab62c89758793a508`.
+
+Task1: in progress — original DOCX re-read, compute inventoried, baseline suite running, independent audit/research dispatched.
+
+Baseline verification:94passed,1optionalcheckpointsmokeskipped,27.42s using Project/.venv; compatible pinned FastAPI/Starlette environment retained. System Python is not the validated environment.
+
+Task1 evidence: real leakage audit2631decoded,1031223cross-splitpairs,0exact/encounter/perceptualcandidates,28within-splitduplicate groups. External ISIC2018validation100image/mask pairs downloaded from officialCC0source and prepared with hashes.58atomicrubricentries mapped.
+
+Task2 TDD:8compactmodel/trainingtests observedRED(missingmodules) thenGREEN;2runner testsREDthenGREEN;10focusedtests pass. Fullsuite to run after concurrent evaluator implementation ends.
+
+Ruling: User asked to move training to Kaggle GPU; prepare private portable source/data bundle and GPU notebook. Use real free-GPU availability when accessible; no paidcompute. Current agent's Kaggle quota read failed at network transport, so actual upload may need a tested one-command user-side launch while local work continues.
+
+Ruling: Keep deterministic algorithms strict on CPU and warning mode on CUDA because official PyTorch documentation lists bilinear interpolation backward as unavailable under strict CUDA determinism in supported versions. Record device/software/flags and seed variation; do not claim GPU bitwise repeatability.
+
+Team updated from user messages:PhạmTấnGiaQuốc23521308,HuỳnhTháiBảo23520105,TrầnMinhTiến23521587,LâmQuangHuy23520609.4distinctvalidIDs,0placeholders;contribution/oral/source-history confirmationstillpending.
+
+Pre-GPU independent review found an Important RGB resize mismatch: validation used native->128 but common test passed native->256->128. Ruling: unify all new compact training/validation/inference on RGB->256bilinear->model-sizebilinear; versioncache/fingerprint and checkpoint preprocessing metadata. Preserve legacy predictor behavior for historical checkpoints. Regression checkerboard failed beforefix. Old CPUexploration stoppedafter10completedepochs; its three source hashes were preserved and verified under Project/results/completion/source-snapshots/compact-v1. It is not a completed final20-epochrun and no newmodeltestmetrics were read. GPU/finalCPU must use a freshv2cache/output.
+
+Prelaunch verification: compact/cache/API/runner15passed; evaluator23passed including actualV2training and historicalV1cache recipes. Integrated200passed,2optional-skipped in56.62s using Project/.venv; frontend node--check passed. Current six-run Kaggle bundle build started only after this green revision.
+
+Task3 analysis: paired cluster bootstrap fixtures RED(missing module)->GREEN; five tests pass including unequal encounter sizes, ID ordering, missing/duplicate IDs, corrupt/incomplete CSV and rendered scientific plot. No real new-model test scores have been calculated yet.
+
+Ruling: start one fresh20epoch V2 primary-recipe CPU backup while preparing free Kaggle GPU launch; save under compact-final-cpu using compact-cache-v2-128. No paidcompute. Do not merge GPU/CPU histories or pretend either device has completed before its frozen manifest exists.
+
+Source checkpoint committed as2944e61 (39files; no data/weights). Private Kaggle bundle built and root Run-CS406-Kaggle.ps1 -CheckOnly passed:60sourcefiles,5852datafiles,1017990901dataZIPbytes,220907sourceZIPbytes. SourceZIP SHA12dacd115fd4b6850e5124a8e9a50582b661ee4b765c0173dd8b68ac40db9a57; dataZIP SHA9b2b4818f1be5f77b1469e94740f53ab2d2da84e573bad321df67c2974752c9a. User explicitly replied 'Se chay sau'; no cloud job/upload has been performed. Do not ask the same launch question again.
+
+Live browser preflight:11checks passed, noJSerrors, sixwidths360..1920. Used actual historical frozen1epochpilot checkpoint10f06c079465374a0a9bf85e20f70ef79aeefbc2c7754401f8dcc64c49b44256 on existing localtestexample and syntheticupload. These pilot metrics are not final20epoch evidence; no final20epoch test/evaluation has occurred. Owned QAserver19904/session61632 was stopped afterchecks; original user server was not targeted. Separate-deliverables environment regression RED->GREEN;37APItests passed.
+
+Provenance breakthrough: pinned official ZIPcentraldirectory, queryIDlists and ENC/forum mapping establish localtrain+test exactly repartition all2474sourceTRAINimageIDs; localvalid equals157sourceVALID IDs;0/314sourceTEST IDs included. All2631images matchZIPmemberbytesize+CRC32 and currentlocalSHA matchesprioraudit. Evidence under Project/results/completion/provenance; finalcomparison_summarySHA38cf8da1f9a223edee682de8e6e558e4d3ffa18133543c457f355bf052a87364. CRC32 is not cryptographicperfile proof; originalmaskmergerule and suppliedcheckpoint exposure remainunresolved. Publicdocs updated accordingly.
+
+Reportdraft: original report.md/builders/deliverables preserved. New Project/scripts/prepare_completion_report.py,build_completion_report.py,package_completion_report.py generate docs/report-completion.md and private output/completion/report-build.33pages,9chapters,54navigationtargets/links,9tables,7figures; TOC/footer labels converged after2passes. Four confirmednames/IDs oncover visuallyverified, pluscompactmethodpages16..18. Canonical render_docx failed because bundledLibreOfficeabsent; actualDOCX rendered using selectedruntime artifactengine and PNGs via bundledPoppler. Not a finalreport: draftsource explicitly waitsfor allsix20epoch runs and externalanalysis; finalpublish gate rejects drafts. Allpages/slides finalvisualreview stillpending.
+
+Ruling: Kaggle is deferred by user; continue full CPU matrix rather than abandon the authorized completion. Start5remainingcases under compact-additional-cpu sequentially, alongsideprimary at4CPUthreads each (8of16logicalCPUs), sharingverifiedv2cache. Keep runs/histories separate, latercollect onlycompletefrozenfolders; nooverwrite/mixing; no paidcompute. Root Start-CS406.ps1 -CheckOnly passed and never auto-selects pilots.

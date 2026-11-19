@@ -18,16 +18,19 @@ from pydantic import Field
 from starlette.concurrency import run_in_threadpool
 
 from .dataset import DatasetStore, color_errors, color_mask, encode_image
+from .runtime import data_root, results_root, deliverables_root, compact_status
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 Split = Literal['train', 'valid', 'test']
-Method = Literal['baseline', 'transunet', 'pixel_logistic']
+Method = Literal['baseline', 'transunet', 'pixel_logistic', 'compact_unet']
 Annotation = Annotated[int, Field(ge=0)] | Literal['consensus']
 
 
 def create_app(data_dir: Path | None = None) -> FastAPI:
     application = FastAPI(title='Segmentation Studio · CS406', version='0.1.0')
-    store = DatasetStore(data_dir or PROJECT_ROOT / 'data')
+    store = DatasetStore(data_dir or data_root(PROJECT_ROOT / 'data'))
+    result_directory = results_root(PROJECT_ROOT / 'results')
+    delivery_directory = deliverables_root(PROJECT_ROOT / 'deliverables')
     application.state.dataset = store
     prediction_lock = Lock()
 
@@ -44,6 +47,7 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
     @application.get('/api/summary')
     def summary():
         result = store.summary()
+        result['compact_model'] = compact_status(result_directory)
         if data_dir is None:
             from .inference import get_model_status
             status = get_model_status()
@@ -102,6 +106,12 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
             elif method == 'transunet':
                 from .inference import predict_transunet
                 probability = predict_transunet(image, normalization=normalization)
+            elif method == 'compact_unet':
+                status = compact_status(result_directory)
+                if not status['inference_ready']:
+                    raise FileNotFoundError(status['error'] or 'Compact U-Net chưa có trọng số và cấu hình đã chốt.')
+                from .compact_model import predict_compact
+                probability = predict_compact(image, checkpoint=Path(status['checkpoint_path']))
             else:
                 from .pixel_model import predict_pixel_model
                 probability = predict_pixel_model(image)
@@ -115,7 +125,7 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
                 error_image = color_errors(np.asarray(binary) > 0, np.asarray(reference) > 0)
                 errors = 'data:image/png;base64,' + b64encode(encode_image(error_image, 1400)).decode()
             return {
-                'method': method, 'threshold': threshold, 'normalization': normalization,
+                'method': method, 'threshold': threshold, 'normalization': 'unit' if method == 'compact_unet' else normalization,
                 'width': image.width, 'height': image.height,
                 'elapsed_ms': round((perf_counter() - started) * 1000),
                 'coverage': round(float(np.asarray(binary).mean()) / 255 * 100, 2),
@@ -138,6 +148,8 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
             if method == 'pixel_logistic':
                 from .pixel_model import pixel_model_status
                 threshold = pixel_model_status().get('threshold') or .5
+            elif method == 'compact_unet':
+                threshold = compact_status(result_directory).get('threshold') or .5
             else:
                 threshold = .5
         reference = None
@@ -166,7 +178,7 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
     @application.get('/api/experiments')
     def experiments():
         reports = []
-        for path in sorted((PROJECT_ROOT / 'results').glob('**/*summary*.json')):
+        for path in sorted(result_directory.glob('**/*summary*.json')):
             if path.parent.name == 'eda':
                 continue
             try:
@@ -177,21 +189,27 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
                             'protocol': {'threshold': data['threshold'], 'reference': 'strict majority, ties background',
                                          'evaluation_size': 256, 'training': 'train only, validation-selected threshold'}}
                 if isinstance(data.get('methods'), dict):
-                    reports.append({'file': str(path.relative_to(PROJECT_ROOT)).replace('\\', '/'), 'data': data})
+                    relative = str(path.relative_to(result_directory)).replace('\\', '/')
+                    reports.append({'file': 'results/' + relative, 'data': data})
             except (OSError, ValueError):
                 continue
-        audit_path = PROJECT_ROOT / 'results/data_audit.json'
+        audit_path = result_directory / 'data_audit.json'
         audit = json.loads(audit_path.read_text(encoding='utf-8')) if audit_path.exists() else None
-        eda_path = PROJECT_ROOT / 'results/eda/summary.json'
+        eda_path = result_directory / 'eda/summary.json'
         eda = json.loads(eda_path.read_text(encoding='utf-8')) if eda_path.exists() else None
-        reports.sort(key=lambda r: (r['file'] != 'results/comparison_test/summary.json', r['file']))
-        analysis_path = PROJECT_ROOT / 'results/analysis/summary.json'
+        def priority(report):
+            data = report['data']
+            if data.get('format') == 'cs406-completion-evaluation-v1':
+                return (0 if data.get('dataset', {}).get('role') != 'external_stress_test' else 1, report['file'])
+            return (2 if report['file'] == 'results/comparison_test/summary.json' else 3, report['file'])
+        reports.sort(key=priority)
+        analysis_path = result_directory / 'analysis/summary.json'
         analysis = json.loads(analysis_path.read_text(encoding='utf-8')) if analysis_path.exists() else None
         return {'reports': reports, 'audit': audit, 'eda': eda, 'analysis': analysis}
 
-    @application.get('/api/results/{run_name}/{file_name}')
+    @application.get('/api/results/{run_name:path}/{file_name}')
     def result_file(run_name: str, file_name: str, download: bool = False):
-        root = (PROJECT_ROOT / 'results').resolve()
+        root = result_directory
         allowed = {'summary.json', 'per_image.csv', 'per_annotation.csv', 'per_subject.csv',
                    'examples.json', 'examples.png', 'overview.png', 'outliers.png', 'outliers.json',
                    'paired_dice.png', 'macro_comparison.png', 'foreground_strata.png', 'agreement_strata.png',
@@ -211,7 +229,7 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
 
     @application.get('/presentation', include_in_schema=False)
     def presentation():
-        path = PROJECT_ROOT / 'deliverables/CS406_Presentation.html'
+        path = delivery_directory / 'CS406_Presentation.html'
         if not path.is_file():
             raise HTTPException(404, 'Bộ slide chưa có trong thư mục deliverables.')
         return FileResponse(path)
@@ -219,7 +237,7 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
     @application.get('/api/deliverables/{file_name}')
     def deliverable(file_name: str):
         allowed = {'CS406_Report.docx', 'CS406_Report.pdf', 'CS406_Defense.pptx', 'CS406_Defense.pdf'}
-        path = PROJECT_ROOT / 'deliverables' / file_name
+        path = delivery_directory / file_name
         if file_name not in allowed or not path.is_file():
             raise HTTPException(404, 'Không tìm thấy tài liệu yêu cầu.')
         return FileResponse(path, filename=file_name)
