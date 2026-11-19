@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 import json
+import os
 from pathlib import Path
 
 import cv2
@@ -69,7 +70,7 @@ def _load_model(path_string: str, modified_ns: int, size: int) -> dict:
 
 def load_pixel_model(model_path: Path | None = None) -> dict:
     """Lazy load with schema validation; a replaced file invalidates the cache."""
-    path = Path(model_path or DEFAULT_MODEL_PATH).resolve()
+    path = Path(model_path or os.environ.get('PIXEL_MODEL_PATH') or DEFAULT_MODEL_PATH).resolve()
     stat = path.stat()
     return _load_model(str(path), stat.st_mtime_ns, stat.st_size)
 
@@ -86,7 +87,7 @@ def predict_pixel_model(image: Image.Image, model_path: Path | None = None) -> n
 
 def pixel_model_status(model_path: Path | None = None) -> dict:
     """Describe model availability and recorded training provenance without sklearn."""
-    path = Path(model_path or DEFAULT_MODEL_PATH)
+    path = Path(model_path or os.environ.get('PIXEL_MODEL_PATH') or DEFAULT_MODEL_PATH)
     status = {'name': 'Supervised pixel logistic regression', 'model_found': path.is_file(),
               'checkpoint_found': path.is_file(), 'inference_ready': False,
               'model_name': path.name, 'error': None}

@@ -1,0 +1,16 @@
+{
+  "id": "REPLACE_OWNER/cs406-private-gpu-training",
+  "title": "cs406 private gpu training",
+  "code_file": "../notebooks/CS406_Training_Kaggle.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": false,
+  "dataset_sources": [
+    "REPLACE_OWNER/cs406-course-private-inputs"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

@@ -1,0 +1,17 @@
+{
+  "course": "CS406 - Xử lý ảnh và Ứng dụng",
+  "updated": "2026-11-19",
+  "team_size": 4,
+  "placeholder_count": 0,
+  "student_id_pattern": "^2352[0-9]{4}$",
+  "members": [
+    {"name": "Phạm Tấn Gia Quốc", "student_id": "23521308", "placeholder": false, "source": "workspace and conversation context", "contribution": null},
+    {"name": "Huỳnh Thái Bảo", "student_id": "23520105", "placeholder": false, "source": "user message 2026-11-19", "contribution": null},
+    {"name": "Trần Minh Tiến", "student_id": "23521587", "placeholder": false, "source": "user message 2026-11-19", "contribution": null},
+    {"name": "Lâm Quang Huy", "student_id": "23520609", "placeholder": false, "source": "user message 2026-11-19", "contribution": null}
+  ],
+  "class_section": null,
+  "supervisor": null,
+  "contributions_confirmed": false,
+  "oral_rehearsal_confirmed": false
+}

@@ -1,0 +1,24 @@
+{
+  "format": "compact-ablation-protocol-v1",
+  "declared": "2026-11-19",
+  "primary_recipe": "bce_dice_aug_s406",
+  "epochs": 20,
+  "image_size": 128,
+  "evaluation_size": 256,
+  "input_preprocessing": "rgb-bilinear-256-then-model-v2",
+  "base_channels": 12,
+  "batch_size": 16,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "checkpoint_selection": "highest validation macro Dice at threshold0.5; earliest epoch on ties",
+  "threshold_selection": "validation only;0.30to0.70inclusive step0.05; smallest threshold on ties",
+  "test_history": "Local test results were examined before this extension; this is a frozen retrospective protocol, not an untouched blinded study.",
+  "runs": [
+    {"name": "bce_plain_s406", "seed": 406, "dice_weight": 0.0, "augment": false},
+    {"name": "bce_dice_s406", "seed": 406, "dice_weight": 1.0, "augment": false},
+    {"name": "bce_aug_s406", "seed": 406, "dice_weight": 0.0, "augment": true},
+    {"name": "bce_dice_aug_s406", "seed": 406, "dice_weight": 1.0, "augment": true},
+    {"name": "bce_dice_aug_s407", "seed": 407, "dice_weight": 1.0, "augment": true},
+    {"name": "bce_dice_aug_s408", "seed": 408, "dice_weight": 1.0, "augment": true}
+  ]
+}

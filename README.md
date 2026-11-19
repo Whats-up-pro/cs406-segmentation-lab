@@ -1,6 +1,6 @@
 # Segmentation Lab · CS406
 
-Ứng dụng local phục vụ đồ án Xử lý ảnh và Ứng dụng: khám phá ảnh và nhãn, phân đoạn nhị phân bằng LAB–Otsu, Logistic pixel hoặc TransUNet, rồi đối chiếu dự đoán với nhãn tham chiếu.
+Ứng dụng local phục vụ đồ án Xử lý ảnh và Ứng dụng: khám phá ảnh và nhãn, phân đoạn nhị phân bằng LAB–Otsu, Logistic pixel, Compact U-Net hoặc TransUNet, rồi đối chiếu dự đoán với nhãn tham chiếu.
 
 Repo này chứa mã backend, frontend, huấn luyện, đánh giá, EDA và kiểm thử. Checkpoint TransUNet được quản lý qua GitHub Releases; dataset, kết quả thực nghiệm, báo cáo và slide được quản lý riêng.
 
@@ -40,7 +40,7 @@ data/
 .venv\Scripts\python.exe -m pip install -r requirements-ml.txt
 ```
 
-Checkpoint có kích thước **421.301.094 byte**; thông tin kiểm chứng nằm trong [manifest mô hình](models/transunet-checkpoint.json). File lớn hơn giới hạn 100 MiB của Git thông thường nên được phát hành dưới dạng [release asset](https://github.com/Whats-up-pro/cs406-segmentation-lab/releases/tag/checkpoint-v1), thay vì commit trực tiếp file `.pth`. Khi asset đã được phát hành, tải bằng GitHub CLI:
+Checkpoint đã được phát hành, kích thước **421.301.094 byte**; thông tin kiểm chứng nằm trong [manifest mô hình](models/transunet-checkpoint.json). Tải từ [GitHub Releases](https://github.com/Whats-up-pro/cs406-segmentation-lab/releases/tag/checkpoint-v1) bằng GitHub CLI:
 
 ```powershell
 New-Item -ItemType Directory -Force -Path data | Out-Null
@@ -51,6 +51,18 @@ Get-FileHash -Algorithm SHA256 data/TransUNet_R50_ViT_B_16_all_best_model.pth
 SHA-256 cần khớp `6df81c63fab9936d8d90e79bfea0264c11516e82d981c70ab62c89758793a508`. Có thể dùng biến môi trường `TRANSUNET_CHECKPOINT` để chỉ định đường dẫn khác. `TRANSUNET_DEVICE` nhận `auto`, `cpu` hoặc `cuda`; `TRANSUNET_CPU_THREADS` mặc định là 4.
 
 Logistic pixel dùng model tại `results/pixel_classifier/model.json`. Tạo model bằng lệnh huấn luyện bên dưới, hoặc lấy model đã học từ người cung cấp tài nguyên. Khi chưa có trọng số, chọn LAB–Otsu trong demo.
+
+Có thể dùng dữ liệu và kết quả ở thư mục khác mà không sao chép vào repo:
+
+```powershell
+$env:SEGMENTATION_DATA_DIR = 'D:\duong-dan\Project\data'
+$env:SEGMENTATION_RESULTS_DIR = 'D:\duong-dan\Project\results'
+$env:SEGMENTATION_DELIVERABLES_DIR = 'D:\duong-dan\Project\deliverables'
+$env:PIXEL_MODEL_PATH = 'D:\duong-dan\Project\results\pixel_classifier\model.json'
+$env:COMPACT_CHECKPOINT = 'D:\duong-dan\Project\results\completion\compact\bce_dice_aug_s406\best.pth'
+```
+
+Compact U-Net chỉ xuất hiện như một lựa chọn chạy được khi trọng số khớp SHA-256 trong `frozen-selection.json` nằm cùng thư mục. Ngưỡng mặc định lấy từ validation của lần huấn luyện đó.
 
 ## Huấn luyện và đánh giá
 
@@ -76,6 +88,21 @@ Lệnh này khởi tạo một thí nghiệm mới từ checkpoint được cung
 
 `scripts/audit_data.py` kiểm kê tên file, split và archive gốc; mặc định tìm `xulyanhungdung.zip` tại thư mục repo. Chỉ dùng bước đối chiếu archive khi có tệp này.
 
+## Thí nghiệm Compact U-Net và Kaggle
+
+Mô hình gọn được khởi tạo ngẫu nhiên, tách biệt với checkpoint TransUNet được cung cấp. [Giao thức cố định](config/experiments/compact_ablation.json) gồm bốn tổ hợp loss × augmentation ở seed 406 và tổ hợp BCE + Dice + augmentation ở seed 407, 408. Mỗi run chạy đủ 20 epoch; train cập nhật trọng số, validation chọn checkpoint và ngưỡng. Chuỗi RGB dùng chung là bilinear về 256 rồi về 128; nhãn dùng nearest neighbor. Test cục bộ đã được xem trước đợt mở rộng này, nên kết quả là benchmark hồi cứu có cấu hình đóng băng.
+
+[Hướng dẫn Kaggle](docs/kaggle.md) cung cấp notebook GPU và cách tạo gói dữ liệu riêng tư. Notebook và mã huấn luyện đã có kiểm thử; lịch sử, trọng số và chỉ số của một run chỉ được coi là kết quả sau khi run thực sự hoàn tất.
+
+```powershell
+.venv\Scripts\python.exe -m scripts.audit_leakage --data-dir data --output results/completion/leakage
+.venv\Scripts\python.exe -m scripts.run_compact_experiments --data-dir data --cache-dir results/completion/compact-cache --output results/completion/compact --device auto --epochs 20
+.venv\Scripts\python.exe -m scripts.evaluate_completion --data-dir data --runs-dir results/completion/compact --cache-dir results/completion/compact-cache --pixel-model results/pixel_classifier/model.json --output results/completion/evaluation --device auto
+.venv\Scripts\python.exe -m scripts.analyze_completion --evaluation-dir results/completion/evaluation --runs-dir results/completion/compact --output results/completion/analysis
+```
+
+Đánh giá kiểm tra manifest, lịch sử và hash trước khi mở tập test. Phân tích xuất macro/micro từ evaluator, khoảng tin cậy bootstrap ghép cặp theo encounter, ablation, biến thiên giữa seed, đường học và các ca lỗi cần xem ảnh. Encounter trong tên file chưa được xác nhận là mã bệnh nhân. [Đối chiếu nguồn đã xác minh](docs/data-provenance-verified.md) giải thích sự khác nhau giữa dữ liệu cục bộ, DermaVQA 2024 và DermaVQA-DAS 2025.
+
 ## Kiểm thử
 
 ```powershell
@@ -97,7 +124,7 @@ Nếu máy có Node.js, kiểm tra cú pháp frontend bằng `node --check front
 
 | Thư mục | Nội dung |
 | --- | --- |
-| [backend](backend/) | FastAPI, dữ liệu, ba bộ dự đoán và các độ đo |
+| [backend](backend/) | FastAPI, dữ liệu, bốn bộ dự đoán và các độ đo |
 | [frontend](frontend/) | Giao diện HTML/CSS/JavaScript |
 | [scripts](scripts/) | Kiểm kê, EDA, huấn luyện và đánh giá |
 | [tests](tests/) | Kiểm thử bằng dữ liệu giả và smoke test tùy chọn |
@@ -111,4 +138,4 @@ Kiến trúc TransUNet được điều chỉnh từ [Beckschen/TransUNet](https
 
 Đội **Anastasia** đứng đầu bảng Segmentation Task Results của MEDIQA-MAGIC 2025 với Jaccard **0,645774234**, Dice **0,784766**, theo [bảng kết quả chính thức](https://www.imageclef.org/2025/medical/mediqa). Hai lần nộp của `khoingotuantu` bạn đọc có thể đối chiếu trong [ghi chú nguồn](docs/data-and-checkpoint.md). Đây là kết quả của đội dự thi; mối liên hệ giữa checkpoint cục bộ với các lần nộp đó còn cần xác nhận.
 
-Bản dữ liệu cục bộ có số lượng khác bản segmentation 2025 công bố; phiên bản, cách chọn ảnh/hợp nhất nhãn, quyền sử dụng và lịch sử huấn luyện checkpoint chưa được xác nhận đầy đủ. Chuẩn hóa TransUNet mặc định là RGB/255; đây là lựa chọn thực nghiệm, chưa được xác nhận là công thức huấn luyện gốc. Đồ án chưa được thẩm định để sử dụng trong chẩn đoán y tế.
+Đã xác minh train + test cục bộ chia lại toàn bộ 2.474 ID ảnh train của nguồn; validation giữ nguyên 157 ID. Không có ảnh thuộc 314 ID test chính thức. Cả 2.631 ảnh khớp kích thước và CRC32 của thành viên ZIP nguồn. Quy tắc hợp nhất mask train/valid, điều kiện mask segmentation và lịch sử checkpoint vẫn chưa được xác nhận đầy đủ. Chuẩn hóa TransUNet mặc định là RGB/255, chưa xác nhận là công thức huấn luyện gốc. Đồ án chưa được thẩm định sử dụng trong chẩn đoán y tế.
