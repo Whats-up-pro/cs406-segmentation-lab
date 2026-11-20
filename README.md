@@ -99,6 +99,7 @@ Mô hình gọn được khởi tạo ngẫu nhiên, tách biệt với checkpoi
 .venv\Scripts\python.exe -m scripts.run_compact_experiments --data-dir data --cache-dir results/completion/compact-cache --output results/completion/compact --device auto --epochs 20
 .venv\Scripts\python.exe -m scripts.evaluate_completion --data-dir data --runs-dir results/completion/compact --cache-dir results/completion/compact-cache --pixel-model results/pixel_classifier/model.json --output results/completion/evaluation --device auto
 .venv\Scripts\python.exe -m scripts.analyze_completion --evaluation-dir results/completion/evaluation --runs-dir results/completion/compact --output results/completion/analysis
+.venv\Scripts\python.exe -m scripts.render_completion_cases --evaluation-dir results/completion/evaluation --data-dir data --output results/completion/cases
 ```
 
 Đánh giá kiểm tra manifest, lịch sử và hash trước khi mở tập test. Phân tích xuất macro/micro từ evaluator, khoảng tin cậy bootstrap ghép cặp theo encounter, ablation, biến thiên giữa seed, đường học và các ca lỗi cần xem ảnh. Encounter trong tên file chưa được xác nhận là mã bệnh nhân. [Đối chiếu nguồn đã xác minh](docs/data-provenance-verified.md) giải thích sự khác nhau giữa dữ liệu cục bộ, DermaVQA 2024 và DermaVQA-DAS 2025.
@@ -120,6 +121,8 @@ Remove-Item Env:RUN_MODEL_SMOKE
 
 Nếu máy có Node.js, kiểm tra cú pháp frontend bằng `node --check frontend/app.js`.
 
+[Danh sách phiên bản đã kiểm tra trên Windows CPU/Python 3.13.7](requirements-windows-cpu-tested.txt) được lấy từ môi trường mới có `include-system-site-packages=false`. Môi trường này đã chạy đầy đủ bộ kiểm thử và nạp checkpoint TransUNet thật trên ảnh validation. Có thể cài bằng `.venv\Scripts\python.exe -m pip install -r requirements-windows-cpu-tested.txt`; notebook Kaggle dùng môi trường GPU sẵn có của Kaggle.
+
 ## Cấu trúc mã
 
 | Thư mục | Nội dung |
@@ -127,6 +130,7 @@ Nếu máy có Node.js, kiểm tra cú pháp frontend bằng `node --check front
 | [backend](backend/) | FastAPI, dữ liệu, bốn bộ dự đoán và các độ đo |
 | [frontend](frontend/) | Giao diện HTML/CSS/JavaScript |
 | [scripts](scripts/) | Kiểm kê, EDA, huấn luyện và đánh giá |
+| [artifact_tools](artifact_tools/) | Dựng báo cáo, slide và hướng dẫn bảo vệ từ kết quả đã kiểm chứng |
 | [tests](tests/) | Kiểm thử bằng dữ liệu giả và smoke test tùy chọn |
 | [third_party/TransUNet](third_party/TransUNet/) | Mã nguồn tham khảo, phiên bản và giấy phép upstream |
 

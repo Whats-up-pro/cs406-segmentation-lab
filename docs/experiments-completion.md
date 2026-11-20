@@ -65,6 +65,8 @@ Phân tích ghép cặp bắt buộc cùng ID ảnh ở hai phương pháp. Kho�
 
 Thời gian trong CSV là thời gian gọi predictor; lần đầu bao gồm lazy load, không có warm-up chuyên biệt. Median, p95 và thời gian các lần tiếp theo được mô tả với cùng giới hạn đó. Không so tốc độ GPU với CPU như một ablation thuật toán.
 
+Một số epoch của run CPU kéo dài qua thời gian máy tạm ngưng, nên `seconds` trong lịch sử bao gồm quãng gián đoạn hệ thống. Không dùng tổng thời lượng các epoch này để kết luận tốc độ huấn luyện hoặc so sánh phần cứng. Việc gián đoạn và di chuyển thư mục resume được ghi riêng, không xóa hoặc sửa thời gian đã lưu.
+
 ## Stress test ngoài nguồn
 
 Bộ ISIC 2018 Task 1 validation gồm 100 cặp dermoscopy/mask được tải từ nguồn chính thức và kiểm tra hash; manifest giữ vai trò nguồn là validation của ISIC, vai trò thí nghiệm là external stress test. Tham số và ngưỡng của mô hình được giữ nguyên. Ảnh dermoscopy, ranh giới tổn thương và ảnh chụp vùng quan tâm của bộ cục bộ khác nhau về modality, nội dung và quy trình chú thích. Điểm thấp hoặc cao ở đây chưa xác nhận chất lượng lâm sàng hay khả năng tổng quát trên mọi ảnh da.

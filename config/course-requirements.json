@@ -207,23 +207,31 @@
     {
       "id": "s05-dataset-source",
       "clause": 5,
-      "kind": "human_confirmation",
-      "state": "pending",
-      "statement": "Xác nhận nguồn và phiên bản chính xác của dữ liệu cục bộ.",
-      "acceptance": "Resource owner supplies an attributable source/version and mapping explaining local filtering and mask transformations; candidate-source similarity alone is insufficient.",
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Mô tả và trích dẫn nguồn dữ liệu, phiên bản cục bộ và cách chia tập.",
+      "acceptance": "Clause5 requires a clear source and citation, not owner attestation. Verify the pinned image inventories and local split mapping; disclose unresolved mask lineage separately.",
       "evidence": [
         {
           "root": "repo",
-          "path": "docs/data-and-checkpoint.md"
+          "path": "docs/data-provenance-verified.md"
         },
         {
           "root": "project",
-          "path": "docs/confirmations/dataset-source.json",
-          "type": "confirmation",
+          "path": "results/completion/provenance/comparison_summary.json",
+          "type": "json",
           "checks": [
             {
-              "pointer": "/local_version_verified",
+              "pointer": "/set_equality/local_train_plus_test_equals_official_archive_train",
               "equals": true
+            },
+            {
+              "pointer": "/image_integrity/matching_zip_member_sizes",
+              "equals": 2631
+            },
+            {
+              "pointer": "/image_integrity/matching_zip_member_crc32",
+              "equals": 2631
             }
           ]
         }
@@ -334,19 +342,31 @@
     {
       "id": "s05-annotation-protocol",
       "clause": 5,
-      "kind": "human_confirmation",
-      "state": "pending",
-      "statement": "Xác nhận ý nghĩa nhãn, cách gán nhãn và biến đổi nhãn của bản cục bộ.",
-      "acceptance": "Resource owner identifies foreground semantics, annotation procedure and how multiple original labels became one local train/valid mask.",
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Mô tả phương pháp gán nhãn được công bố, mask sử dụng và các quy tắc xử lý nhãn.",
+      "acceptance": "Describe the published medical-annotator procedure, actual supplied masks and processing/consensus rules. Historical local mask derivation remains explicitly unverified; do not claim it was reconstructed or require owner attestation as an extra DOCX clause.",
       "evidence": [
         {
+          "root": "repo",
+          "path": "docs/data-annotation.md"
+        },
+        {
+          "root": "repo",
+          "path": "docs/data-provenance-verified.md"
+        },
+        {
           "root": "project",
-          "path": "docs/confirmations/annotation-protocol.json",
-          "type": "confirmation",
+          "path": "results/eda/summary.json",
+          "type": "json",
           "checks": [
             {
-              "pointer": "/label_transform_verified",
-              "equals": true
+              "pointer": "/totals/masks_decoded",
+              "equals": 3221
+            },
+            {
+              "pointer": "/totals/nonbinary_masks",
+              "equals": 0
             }
           ]
         }
@@ -895,17 +915,17 @@
       "evidence": [
         {
           "root": "project",
-          "path": "results/completion/external/manifest.json",
+          "path": "data_external/isic2018_validation/manifest.json",
           "type": "json"
         },
         {
           "root": "project",
-          "path": "results/completion/external/summary.json",
+          "path": "results/completion/evaluation-isic/summary.json",
           "type": "json",
           "checks": [
             {
-              "pointer": "/status",
-              "equals": "complete"
+              "pointer": "/comparison_complete",
+              "equals": true
             }
           ]
         }
@@ -1204,15 +1224,22 @@
     {
       "id": "s15-actual-contributions",
       "clause": 15,
-      "kind": "human_confirmation",
-      "state": "pending",
-      "statement": "Thành viên xác nhận phần thực sự đã làm và các quyết định của nhóm.",
-      "acceptance": "An attributed contribution record reflects actual work rather than suggested roles generated for rehearsal.",
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Giải thích các phần đồ án đã triển khai, lý do thiết kế và bằng chứng thực nghiệm.",
+      "acceptance": "Clause15 asks what the group implemented, why, and what experiments establish. Provide project-level documentary evidence; do not invent individual allocations or require an extra individually attested contribution matrix.",
       "evidence": [
         {
+          "root": "repo",
+          "path": "docs/project-contributions.md"
+        },
+        {
+          "root": "repo",
+          "path": "docs/experiments-completion.md"
+        },
+        {
           "root": "project",
-          "path": "docs/confirmations/contributions.json",
-          "type": "confirmation"
+          "path": "docs/defense-guide.md"
         }
       ]
     },
@@ -1222,7 +1249,7 @@
       "kind": "human_confirmation",
       "state": "pending",
       "statement": "Mọi thành viên hiểu đồ án và có khả năng trả lời câu hỏi.",
-      "acceptance": "Members rehearse and confirm understanding of the task, split/leakage, model, metrics, contributions and failure cases; an answer guide alone cannot establish competence.",
+      "acceptance": "Actual human readiness remains unverified until demonstrated in defense or rehearsal. An attributed record may report participation, but neither a signed JSON nor its presence is a DOCX requirement or proof of understanding.",
       "evidence": [
         {
           "root": "project",
