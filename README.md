@@ -22,7 +22,7 @@ Sau khi cài thư viện, cũng có thể khởi động bằng `./start.ps1`.
 
 ## Chuẩn bị dữ liệu và mô hình
 
-Nguồn tham khảo gồm [DermaVQA](https://github.com/velvinnn/DermaVQA), [DermaVQA-DAS / MEDIQA-MAGIC 2025](https://www.imageclef.org/2025/medical/mediqa) và [tài nguyên, mã đánh giá năm 2025](https://github.com/wyim/ImageCLEF-MAGIC-2025). Xem [đối chiếu nguồn dữ liệu và checkpoint](docs/data-and-checkpoint.md) để phân biệt các phiên bản và kết quả cuộc thi. Lấy bản dữ liệu đã chuẩn bị từ người cung cấp tài nguyên đồ án, sau đó đặt vào cấu trúc sau:
+Nguồn tham khảo gồm [DermaVQA](https://github.com/velvinnn/DermaVQA), [DermaVQA-DAS / MEDIQA-MAGIC 2025](https://www.imageclef.org/2025/medical/mediqa) và [tài nguyên, mã đánh giá năm 2025](https://github.com/wyim/ImageCLEF-MAGIC-2025). Chi tiết về phiên bản dữ liệu và nguồn gốc trọng số nằm trong [ghi chú nguồn](docs/data-and-checkpoint.md). Lấy bản dữ liệu đã chuẩn bị từ người cung cấp tài nguyên đồ án, sau đó đặt vào cấu trúc sau:
 
 ```text
 data/
@@ -135,7 +135,5 @@ Các route trình chiếu và tải báo cáo chỉ hoạt động khi bộ tài
 ## Nguồn và giới hạn
 
 Kiến trúc TransUNet được điều chỉnh từ [Beckschen/TransUNet](https://github.com/Beckschen/TransUNet), revision `02ef0010b36eb8328b5e689eadaf613602edf9b8`. Bản sao nguồn, giấy phép Apache-2.0 và mô tả thay đổi được giữ tại [NOTICE](third_party/TransUNet/NOTICE.md) và [LICENSE upstream](third_party/TransUNet/LICENSE). Giấy phép nguồn upstream không xác định quyền phân phối dataset hoặc checkpoint riêng.
-
-Đội **Anastasia** đứng đầu bảng Segmentation Task Results của MEDIQA-MAGIC 2025 với Jaccard **0,645774234**, Dice **0,784766**, theo [bảng kết quả chính thức](https://www.imageclef.org/2025/medical/mediqa). Hai lần nộp của `khoingotuantu` bạn đọc có thể đối chiếu trong [ghi chú nguồn](docs/data-and-checkpoint.md). Đây là kết quả của đội dự thi; mối liên hệ giữa checkpoint cục bộ với các lần nộp đó còn cần xác nhận.
 
 Đã xác minh train + test cục bộ chia lại toàn bộ 2.474 ID ảnh train của nguồn; validation giữ nguyên 157 ID. Không có ảnh thuộc 314 ID test chính thức. Cả 2.631 ảnh khớp kích thước và CRC32 của thành viên ZIP nguồn. Quy tắc hợp nhất mask train/valid, điều kiện mask segmentation và lịch sử checkpoint vẫn chưa được xác nhận đầy đủ. Chuẩn hóa TransUNet mặc định là RGB/255, chưa xác nhận là công thức huấn luyện gốc. Đồ án chưa được thẩm định sử dụng trong chẩn đoán y tế.
