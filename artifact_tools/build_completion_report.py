@@ -219,8 +219,8 @@ def style_document(d):
     p.line_spacing=1.15;p.space_before=Pt(8);p.space_after=Pt(8);p.keep_with_next=True
     for name,indent,bold in [('TOC 1',0,True),('TOC 2',.65,False)]:
         s=d.styles[name];s.font.size=Pt(12);s.font.bold=bold
-        p=s.paragraph_format;p.first_line_indent=Cm(0);p.left_indent=Cm(indent);p.space_before=Pt(0);p.space_after=Pt(4)
-        p.line_spacing=1.15;p.alignment=WD_ALIGN_PARAGRAPH.LEFT;p.keep_together=True
+        p=s.paragraph_format;p.first_line_indent=Cm(0);p.left_indent=Cm(indent);p.space_before=Pt(0);p.space_after=Pt(1.5)
+        p.line_spacing=1.1;p.alignment=WD_ALIGN_PARAGRAPH.LEFT;p.keep_together=True
         p.tab_stops.add_tab_stop(Cm(WIDTH_CM),WD_TAB_ALIGNMENT.RIGHT,WD_TAB_LEADER.DOTS)
     s=d.styles['Table of Figures'];s.font.size=Pt(12);s.font.bold=False;s.font.italic=False
     p=s.paragraph_format;p.first_line_indent=Cm(0);p.space_after=Pt(5);p.line_spacing=1.15
@@ -264,7 +264,8 @@ def make_table(d, rows, kind):
     t.autofit=False;t.alignment=WD_TABLE_ALIGNMENT.LEFT
     if kind=='table_4_1':widths=[4.1,8.4,3.0]
     elif kind=='table_4_2':widths=[4.4,11.1]
-    elif kind=='table_7_2':widths=[4.4,6.1,2.5,2.5]
+    elif kind=='table_7_2':widths=[5.0,5.5,2.5,2.5]
+    elif columns==7:widths=[4.1]+[1.9]*6
     elif columns==6:widths=[4.4]+[2.22]*5
     elif kind.startswith('table_7_'):widths=[4.9,2.55,2.55,5.5]
     elif columns==4:widths=[5.5,3.3,3.3,3.4]
@@ -339,7 +340,7 @@ def build(output, page_map):
             if 'key' not in b:continue
             style='FrontTitle' if b['key'] in ['summary','references'] else 'Heading '+str(b['outline'])
             p=d.add_paragraph(b['display'],style=style)
-            p.paragraph_format.page_break_before=(b['outline']==1 and b['key']!='chapter_1') or b['key'] in ['heading_7_2','heading_8_2']
+            p.paragraph_format.page_break_before=(b['outline']==1 and b['key'] not in {'chapter_1','chapter_5'}) or b['key'] in {'heading_6_4','heading_6_5','heading_7_2'}
             bookmark(p,b['key'],counter);counter+=1;index.append(b)
             if b['key']=='references':references=True
         elif b['kind']=='paragraph':
@@ -352,7 +353,6 @@ def build(output, page_map):
             p=d.add_paragraph(style='CodeBlock');font(p.add_run(b['text']),size=10,name='Consolas')
         elif b['kind']=='table':
             p=d.add_paragraph(style='Caption');caption_text(p,b['display']);p.paragraph_format.keep_with_next=True
-            if b['key']=='table_3_2':p.paragraph_format.page_break_before=True
             for run in p.runs:font(run,size=12,bold=True,italic=False)
             bookmark(p,b['key'],counter);counter+=1;index.append(b)
             make_table(d,b['rows'],b['key'])
@@ -362,7 +362,7 @@ def build(output, page_map):
             p.paragraph_format.line_spacing=1;p.paragraph_format.keep_together=True
             p.paragraph_format.keep_with_next=True;p.paragraph_format.space_after=Pt(0)
             with Image.open(source) as image:ratio=image.height/image.width
-            preferred={'figure_3_1':15,'figure_7_3':14.8}.get(b['key'],WIDTH_CM)
+            preferred={'figure_3_1':15,'figure_7_3':14.8,'figure_7_4':13.0,'figure_7_5':13.0}.get(b['key'],WIDTH_CM)
             width=min(preferred,18/ratio)
             p.add_run().add_picture(str(source),width=Cm(width))
             p=d.add_paragraph(style='Caption');caption_text(p,b['display']);bookmark(p,b['key'],counter);counter+=1

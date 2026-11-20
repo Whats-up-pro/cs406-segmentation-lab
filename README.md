@@ -4,6 +4,8 @@
 
 Repo này chứa mã backend, frontend, huấn luyện, đánh giá, EDA và kiểm thử. Checkpoint TransUNet được quản lý qua GitHub Releases; dataset, kết quả thực nghiệm, báo cáo và slide được quản lý riêng.
 
+Sáu lượt huấn luyện Compact U-Net hoàn tất đủ 20 epoch. Trên 295 ảnh test cục bộ, cấu hình chính đạt Dice **0,6143** và LAB–Otsu đạt **0,4435**. Trên 100 ảnh ISIC 2018 validation, hai phương pháp lần lượt đạt **0,6722** và **0,6905**. Gói nộp chứa trọng số, điểm từng ảnh, cấu hình ablation, kết quả ba seed, báo cáo và slide. [Thiết kế và giao thức đánh giá](docs/experiments-completion.md).
+
 ## Quick start
 
 Cần Python 3.11 trở lên. Chạy các lệnh sau tại thư mục repo trong PowerShell:

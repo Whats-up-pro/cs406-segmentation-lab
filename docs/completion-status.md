@@ -2,7 +2,7 @@
 
 Cập nhật nền ngày 19/11/2026. Căn cứ là `Project/CS406_Yeu_cau_do_an_Xu_ly_anh_va_Ung_dung.docx` trong workspace `D:/HK1_2026-2027/CS406`; kho mã chính là `cs406-segmentation-lab`, bản dữ liệu và kết quả đầy đủ nằm ở thư mục anh em `Project`.
 
-Cập nhật ngày 20/11/2026: code tích hợp đã qua 204 kiểm thử, 2 kiểm thử tùy chọn được bỏ qua; môi trường cài mới tách system packages đã được kiểm tra, cùng smoke test checkpoint thật trên validation. Demo model Compact 20 epoch qua 12 kiểm tra trình duyệt. Bốn trong sáu run đã hoàn tất và đóng băng, hai run cuối đang chạy CPU. Báo cáo nháp riêng có 33 trang, mục lục và 54 đích điều hướng đã đối chiếu; bộ báo cáo/slide cuối và đánh giá ISIC vẫn chưa hoàn tất. Không coi bản nháp là bộ nộp cuối.
+Cập nhật ngày 20/11/2026. Sáu lần huấn luyện CPU đã hoàn tất đủ 20 epoch. Hai lần đánh giá chấm đủ 9 phương pháp trên 295 ảnh test local và 100 ảnh ISIC. Báo cáo 37 trang, 19 slide, bản HTML ngoại tuyến và hướng dẫn bảo vệ nằm trong `Project/deliverables/completion-20261119`. Bằng chứng chạy demo, tạo tài liệu và kiểm tra bộ nộp được ghi tại `Project/results/completion`.
 
 Ma trận [course-requirements.json](../config/course-requirements.json) ánh xạ từng điều khoản của cả 18 mục DOCX thành yêu cầu có bằng chứng và tiêu chí nghiệm thu. Trạng thái này không phải điểm số tự động, không bảo đảm giảng viên chấm đạt, và không thay thế kiểm tra nội dung, bố cục hay hiểu biết của thành viên. Rubric gợi ý trong DOCX dành 30% cho báo cáo, 20% cho phương pháp và mức độ hiểu; leakage, sao chép, không hiểu mô hình và kết quả không tái lập có thể được xử lý riêng.
 
@@ -13,7 +13,8 @@ Ma trận [course-requirements.json](../config/course-requirements.json) ánh x�
 - Logistic **đã huấn luyện đầy đủ hai lượt trên train**, seed 406, 8.925.184 lượt pixel; validation chọn ngưỡng 0,30. Manifest, model và lựa chọn được lưu trước khi script khám phá test. Test Dice 0,341623 thấp hơn LAB 0,443523; đây là một thực nghiệm có kiểm soát hoàn tất, không phải kết quả giả hay fine-tuning TransUNet.
 - Checkpoint TransUNet có 105.275.921 tham số, 409 tensor và manifest SHA-256. Test Dice 0,745545 là kết quả tham khảo trên dữ liệu cung cấp; chưa biết dữ liệu huấn luyện gốc hoặc test exposure của checkpoint.
 - Có so sánh đủ test, Dice/IoU/Accuracy/Precision/Recall, CSV từng ảnh/annotation, phân tích lỗi, bootstrap theo nhóm filename và độ nhạy ảnh trùng chính xác. Các khoảng bootstrap mô tả dữ liệu hiện có; chúng không chứng minh patient independence hoặc nguồn gốc checkpoint.
-- Có ứng dụng dự đoán thật, báo cáo chín phần, slide và hướng dẫn bảo vệ. Các tài liệu cũ vẫn cần cập nhật và kiểm tra với kết quả cuối cùng.
+- Compact U-Net khởi tạo từ đầu đạt Dice 0,614251 trên test local. Chênh lệch với LAB–Otsu là 0,170728, với khoảng bootstrap ghép cặp 95% từ 0,128513 đến 0,214490. Trên ISIC, Dice Compact là 0,672157 và LAB–Otsu là 0,690519. Bốn cấu hình loss/tăng cường và kết quả qua ba seed được công bố đầy đủ.
+- Demo dự đoán thật bằng bốn phương pháp đã qua 12 kiểm tra trình duyệt với checkpoint cuối. Tải CSV test local/ISIC, báo cáo và slide qua ứng dụng trả đúng byte đã kiểm tra.
 
 **Test ban đầu đã được xem để phân tích lỗi.** Thực nghiệm tiếp theo phải chọn recipe/checkpoint/ngưỡng bằng train/validation, đóng băng lựa chọn trước đánh giá test, đồng thời nói rõ việc nhóm đã quan sát test trước đó. Quy tắc này bảo vệ việc không dùng test để cập nhật tham số; nó không khôi phục một tập test chưa từng được người nghiên cứu quan sát.
 
@@ -22,12 +23,12 @@ Ma trận [course-requirements.json](../config/course-requirements.json) ánh x�
 | Hạng mục | Tiêu chí nghiệm thu | Trạng thái nền |
 | --- | --- | --- |
 | Kiểm tra leakage | Hash, mã nhóm và ứng viên gần trùng xuyên tập, kèm giao thức/ngưỡng và rà soát ứng viên | `results/completion/leakage/summary.json`: giải mã 2.631 ảnh, so sánh 1.031.223 cặp xuyên tập, 0 nhóm byte trùng và 0 ứng viên theo ngưỡng đã khai báo; không chứng minh patient independence |
-| Compact U-Net từ đầu | Train-only update, valid-only selection, đầy đủ số ảnh/lịch sử/checkpoint/hash và frozen selection | Recipe chính CPU hoàn tất 20 epoch, đủ 2.179/157 ảnh mỗi epoch; chọn epoch 17, ngưỡng valid 0,40. Chưa đánh giá test của mô hình cuối |
-| Ablation và nhiều seed | Loss × augmentation định trước, cùng ngân sách; chạy thật các seed đã khai báo | Planned; kết quả phải do manifest hoàn tất cung cấp |
-| Stress test ngoài nguồn | Nguồn/quyền dùng/ảnh/mask kiểm chứng được, cấu hình đóng băng, giới hạn modality/semantics | Đã chuẩn bị đủ 100 cặp ISIC validation CC0 và kiểm tra hash; đánh giá còn chờ đủ sáu run đóng băng |
-| Demo cuối | API/browser kiểm tra predictor mới, upload không nhãn, PNG đúng kích thước và lỗi tài nguyên | 12 browser checks đạt với checkpoint 20 epoch trên validation và upload; không chấm test của mô hình cuối. Sẽ rà lại với bảng kết quả hoàn tất |
-| Báo cáo và slide cuối | Số liệu khớp CSV, render từng trang/slide, TOC/caption/reference đúng, không còn ghi chú biên tập | Nháp Word/PDF mới 33 trang có bìa đủ bốn thành viên và 54 đích TOC đã kiểm tra. Chờ bảng thực nghiệm để tái xuất bản cuối và slide |
-| Bộ nộp chạy lại | Source sạch, requirements, model manifest, tài nguyên lấy được và lệnh chạy đã thử | Cần kiểm tra package và liên kết thật |
+| Compact U-Net từ đầu | Chỉ cập nhật trên train, chọn trên validation | Recipe chính 20 epoch, đủ 2.179/157 ảnh mỗi epoch. Chọn epoch 17 và ngưỡng 0,40. Có hash của checkpoint, cấu hình, dữ liệu và lịch sử |
+| Ablation và nhiều seed | Cùng ngân sách cho bốn tổ hợp loss × augmentation | Sáu run hoàn tất. Ba seed của cấu hình đầy đủ đạt Dice local trung bình 0,6262 với SD mẫu 0,0114 |
+| Stress test ngoài nguồn | Giữ nguyên trọng số, ngưỡng và chuẩn hóa | 100 cặp ISIC 2018 validation đã chấm đủ 9 phương pháp. Manifest lưu nguồn và SHA-256 |
+| Demo cuối | Dự đoán, upload, xuất PNG và tải tài liệu | `demo-review.json` có 12 lượt kiểm tra trình duyệt và hash tài liệu/CSV từ API |
+| Báo cáo và slide cuối | Số liệu khớp CSV, bố cục và mục lục đã rà | `document-review.json` ghi 37 trang báo cáo, 19 slide và 65 đích điều hướng |
+| Bộ nộp chạy lại | Source sạch, requirements, dữ liệu, trọng số và lệnh chạy | Trạng thái kiểm tra gói cuối nằm ở `results/completion/package-review.json` |
 
 DOCX khuyến khích ablation và đánh giá ngoài nguồn; chúng là phần mở rộng để nâng chất lượng, không phải điều kiện bắt buộc được tự thêm vào rubric. Không bắt buộc huấn luyện toàn bộ TransUNet hoặc đạt một Dice tối thiểu. Kết quả không cao nhưng được thiết kế và phân tích khoa học vẫn có giá trị.
 

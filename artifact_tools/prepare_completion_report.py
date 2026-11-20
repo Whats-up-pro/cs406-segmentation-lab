@@ -47,19 +47,27 @@ def verified_inputs(evaluation, analysis, external, external_analysis):
     local, _ = load_verified_evaluation(evaluation)
     outside, _ = load_verified_evaluation(external)
     protocol = json.loads((REPO/'config/experiments/compact_ablation.json').read_text(encoding='utf-8'))
-    required = {row['name'] for row in protocol['runs']}|{'baseline','pixel_logistic','transunet'}
+    recipes = {row['name']: row for row in protocol['runs']}
+    shared = ('epochs', 'image_size', 'base_channels', 'batch_size', 'learning_rate',
+              'weight_decay', 'input_preprocessing')
+    required = set(recipes)|{'baseline','pixel_logistic','transunet'}
     for name, summary, count in [('local',local,295),('external',outside,100)]:
         if set(summary['methods']) != required or summary['available_images'] != count:
             raise ValueError(f'Incomplete final {name} method/image coverage')
-        for method in [row['name'] for row in protocol['runs']]:
-            frozen = summary['methods'][method]['provenance']['frozen']
+        for method, recipe in recipes.items():
+            provenance = summary['methods'][method]['provenance']
+            frozen = provenance['frozen']
             if frozen['epochs'] != 20 or frozen['counts'] != {'train':2179,'valid':157}:
                 raise ValueError('Final report requires full declared training, not pilot results')
+            expected = {key: protocol[key] for key in shared}
+            expected.update({key: recipe[key] for key in ('seed','augment','dice_weight')})
+            if any(provenance['config'].get(key) != value for key, value in expected.items()):
+                raise ValueError(f'Declared recipe differs from frozen run: {name}/{method}')
     for method in required:
         left, right = local['methods'][method], outside['methods'][method]
         if left['threshold'] != right['threshold']:
             raise ValueError('External evaluation changed a frozen threshold')
-        if method in {row['name'] for row in protocol['runs']}:
+        if method in recipes:
             same = left['provenance']['frozen'] == right['provenance']['frozen']
         else:
             same = left['provenance'] == right['provenance']
@@ -175,9 +183,10 @@ Sáu cấu hình Compact U-Net đã được cố định trước bước đán
         spec = json.loads((REPO/'config/experiments/compact_ablation.json').read_text(encoding='utf-8'))
         extension = '### 6.4. Compact U-Net và ablation có kiểm soát\n\n'
         extension += 'Tất cả sáu lần chạy hoàn tất đủ 20 epoch, mỗi epoch dùng 2.179 ảnh train và 157 ảnh validation. Recipe chính là tổ hợp BCE + Dice + augmentation tại seed 406 đã được khai báo trước; không chọn seed tốt nhất bằng test.\n'
-        extension += table('Kết quả mở rộng trên cùng 295 ảnh test cục bộ', ['Phương pháp','Dice','IoU','Precision','Recall','BF1'],
-                           [[NAMES[key]]+[dec(local['methods'][key]['macro']['mean'][metric]) for metric in ('dice','iou','precision','recall','boundary_f1')]
+        extension += table('Kết quả mở rộng trên cùng 295 ảnh test cục bộ', ['Phương pháp','Dice','IoU','Acc.','Prec.','Recall','BF1'],
+                           [[NAMES[key]]+[dec(local['methods'][key]['macro']['mean'][metric]) for metric in ('dice','iou','pixel_accuracy','precision','recall','boundary_f1')]
                             for key in ('baseline','pixel_logistic',PRIMARY,'transunet')])
+        extension += 'Acc. là độ chính xác pixel, Prec. là Precision; BF1 là boundary F1 với dung sai 2 pixel tại 256×256. Các cột đều là trung bình theo ảnh; độ chính xác pixel chịu ảnh hưởng mạnh của nền.\n\n'
         extension += table('Ablation loss và augmentation ở seed 406', ['Cấu hình','Epoch chọn','Ngưỡng valid','Dice test','IoU test'],
                            [[NAMES[row['name']], local['methods'][row['name']]['provenance']['frozen']['best_epoch'],
                              dec(local['methods'][row['name']]['threshold'],2), dec(local['methods'][row['name']]['macro']['mean']['dice']),
@@ -189,6 +198,16 @@ Sáu cấu hình Compact U-Net đã được cố định trước bước đán
                              *[dec(value) for value in analysis['comparisons'][PRIMARY+'-minus-'+key]['dice']['ci95']]]
                             for key in ('baseline','pixel_logistic','bce_plain_s406','bce_dice_s406','bce_aug_s406','transunet')])
         extension += 'Các khoảng ghép cặp lấy mẫu lại encounter và cân bằng theo ảnh; so sánh mang tính thăm dò, không khẳng định quan hệ nhân quả hoặc ưu thế kiến trúc. Điểm TransUNet thuộc checkpoint có lịch sử chưa biết, nên không mang cùng bảo đảm về exposure như các lần Compact học từ đầu.\n\n'
+        paired = analysis['comparisons']
+        baseline_delta = paired[PRIMARY+'-minus-baseline']['dice']
+        dice_only_delta = paired[PRIMARY+'-minus-bce_dice_s406']['dice']
+        plain_delta = paired[PRIMARY+'-minus-bce_plain_s406']['dice']
+        extension += f"Trên cùng ảnh, chênh lệch Dice của recipe chính so với LAB–Otsu là {dec(100*baseline_delta['delta'],2)} điểm phần trăm. Chênh lệch với BCE thuần là {dec(plain_delta['delta'])}, và với BCE + Dice không tăng cường ở seed 406 là {dec(dice_only_delta['delta'])}."
+        if all(item['ci95'][0] <= 0 <= item['ci95'][1] for item in (plain_delta,dice_only_delta)):
+            extension += ' Hai khoảng 95% tương ứng đều đi qua 0.'
+        if dice_only_delta['delta'] < 0:
+            extension += ' Trong lần chạy này, tăng cường không nâng Dice khi đã dùng BCE + Dice ở seed 406.'
+        extension += ' Các quan sát trên test được dùng để phân tích kết quả sau khi đã chọn recipe.\n\n'
         figures = ROOT/'docs/figures/completion'; figures.mkdir(parents=True,exist_ok=True)
         for name in ('method_comparison.png','training_curves.png'):
             source = args.analysis_dir/name
@@ -196,11 +215,14 @@ Sáu cấu hình Compact U-Net đã được cố định trước bước đán
             shutil.copyfile(source, figures/name)
         extension += '![So sánh các cấu hình đã đóng băng trên cùng benchmark.](figures/completion/method_comparison.png)\n\n'
         extension += '![Đường loss huấn luyện và Dice validation từng epoch.](figures/completion/training_curves.png)\n\n'
+        extension += 'Mức loss BCE và BCE + Dice thuộc hai mục tiêu khác nhau; không đọc loss thấp hơn giữa hai nhóm thành chất lượng phân đoạn tốt hơn. Đường Dice validation được chấm tại 128×128 và ngưỡng 0,50, khác bước chọn ngưỡng ở 256×256.\n\n'
         extension += '### 6.5. Stress test ngoài nguồn ISIC\n\n'
-        extension += table('Đánh giá không tinh chỉnh trên 100 ảnh ISIC validation', ['Phương pháp','Dice','IoU','Precision','Recall','BF1'],
-                           [[NAMES[key]]+[dec(outside['methods'][key]['macro']['mean'][metric]) for metric in ('dice','iou','precision','recall','boundary_f1')]
+        extension += table('Đánh giá không tinh chỉnh trên 100 ảnh ISIC validation', ['Phương pháp','Dice','IoU','Acc.','Prec.','Recall','BF1'],
+                           [[NAMES[key]]+[dec(outside['methods'][key]['macro']['mean'][metric]) for metric in ('dice','iou','pixel_accuracy','precision','recall','boundary_f1')]
                             for key in ('baseline','pixel_logistic',PRIMARY,'transunet')])
         extension += 'Ngưỡng, trọng số và cách chuẩn hóa giữ nguyên từ nguồn cục bộ. Khác biệt ảnh dermoscopy và ranh giới tổn thương giới hạn cách diễn giải; không coi điểm ISIC là kiểm định lâm sàng. Với TransUNet, dữ liệu huấn luyện gốc chưa biết nên không xác nhận ISIC là dữ liệu chưa từng được checkpoint quan sát.\n\n'
+        outside_delta = external_analysis['comparisons'][PRIMARY+'-minus-baseline']['dice']
+        extension += f"Trên ISIC, chênh lệch Dice Compact trừ LAB–Otsu là {dec(outside_delta['delta'])}, khoảng bootstrap 95% [{dec(outside_delta['ci95'][0])}; {dec(outside_delta['ci95'][1])}]. Xếp hạng quan sát của hai phương pháp thay đổi giữa hai bộ dữ liệu. Các điểm Dice và BF1 mô tả hai khía cạnh khác nhau của mặt nạ: TransUNet có Dice {dec(outside['methods']['transunet']['macro']['mean']['dice'])} và BF1 {dec(outside['methods']['transunet']['macro']['mean']['boundary_f1'])} trên ISIC.\n\n"
         reasons = {'best_foreground_dice':'Dice cao nhất khi nhãn không rỗng', 'worst_dice':'Dice thấp nhất',
                    'largest_primary_minus_baseline':'Chênh lệch lớn nhất so với LAB–Otsu',
                    'smallest_primary_minus_baseline':'Chênh lệch nhỏ nhất so với LAB–Otsu'}
@@ -214,6 +236,13 @@ Sáu cấu hình Compact U-Net đã được cố định trước bước đán
             shutil.copyfile(args.case_dir/name,figures/name)
             error_section += f'![Ảnh RGB, nhãn, dự đoán Compact và sai khác; TP xanh lục, FP đỏ, FN xanh lam.](figures/completion/{name})\n\n'
         error_section += 'Vùng đỏ là dự đoán foreground ngoài nhãn; vùng lam là foreground trong nhãn bị bỏ sót; nền đen là TN. Các hình cho phép xác định vị trí và mức dự đoán thừa hoặc thiếu ở từng mẫu. Chỉ số xếp hạng không tự xác định nguyên nhân do màu da, ánh sáng hay kiến trúc; diễn giải nhân quả cần thí nghiệm bổ sung.\n\n'
+        for key,description in [('worst_dice','Trường hợp Dice thấp nhất'),
+                                ('largest_primary_minus_baseline','Trường hợp cải thiện nhiều nhất so với LAB–Otsu'),
+                                ('smallest_primary_minus_baseline','Trường hợp kém LAB–Otsu nhiều nhất')]:
+            item = next(row for row in cases['cases'] if key in row['selection_reasons'])
+            conf = item['primary_confusion']
+            predicted_fraction = (conf['TP']+conf['FP'])/sum(conf.values())
+            error_section += f"{description}, `{item['id']}`, có vùng nhãn chiếm {dec(100*item['target_fraction'],2)}% ảnh và Compact dự đoán {dec(100*predicted_fraction,2)}%. Ma trận điểm ảnh gồm {conf['TP']} TP, {conf['FP']} FP và {conf['FN']} FN. Dice Compact {dec(item['primary_dice'])}, Dice LAB–Otsu {dec(item['baseline_dice'])}.\n\n"
         text = text.replace('## 8.',error_section+'## 8.',1)
         receipts['case_manifest_sha256'] = sha(args.case_dir/'case-manifest.json')
         receipts['final_evidence_sha256'] = {str(path/'summary.json' if i in (0,2) else path/'analysis.json'):sha(path/('summary.json' if i in (0,2) else 'analysis.json')) for i,path in enumerate(paths)}

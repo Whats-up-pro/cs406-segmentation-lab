@@ -22,7 +22,7 @@ def prepare(source,output):
            ('13–15','3 phút','Lỗi thật, demo và kết luận có giới hạn')]
     text=f'''# Hướng dẫn bảo vệ CS406
 
-Tài liệu dùng cùng số liệu đã kiểm chứng với bộ 15 slide chính và 4 phụ lục. Mã nguồn công khai tại https://github.com/Whats-up-pro/cs406-segmentation-lab. Tài nguyên ảnh và bằng chứng đầy đủ nằm trong gói nộp riêng. Đây là tài liệu chuẩn bị; chưa xác nhận nhóm đã tập bảo vệ hoặc mọi thành viên đã hiểu toàn bộ phương pháp.
+Tài liệu dùng cùng số liệu đã kiểm chứng với bộ 15 slide chính và 4 phụ lục. Tài nguyên ảnh, lịch sử huấn luyện và kết quả từng ảnh nằm trong gói nộp riêng. Đây là tài liệu chuẩn bị cho buổi bảo vệ. [Mã nguồn đồ án](https://github.com/Whats-up-pro/cs406-segmentation-lab/tree/feat/course-completion-20261119).
 
 ## Phân vai tập thử trong 12 phút
 

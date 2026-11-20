@@ -53,6 +53,8 @@ Augmentation chỉ áp dụng train: lật hai chiều độc lập với xác s
 
 Cache chỉ khám phá thư mục train/valid; ghi SHA-256 của từng ảnh và mask, fingerprint của danh sách nguồn, kích thước và recipe tiền xử lý. Resume phải khớp cấu hình, nguồn và dữ liệu, đồng thời phục hồi optimizer và lịch sử; một kiểm thử nhỏ xác nhận trọng số CPU sau gián đoạn khớp run không gián đoạn. CPU bật deterministic algorithms nghiêm ngặt. CUDA ghi nhận chế độ cảnh báo do bilinear backward có thể không hỗ trợ kernel deterministic; không hứa kết quả GPU trùng từng bit.
 
+Phiên bản nộp lưu và kiểm tra SHA-256 của cả năm mảng cache trước khi dùng lại. Hãy chọn thư mục cache mới khi huấn luyện bằng phiên bản này nếu bản cũ thiếu hash mảng. Cache đã dùng cho sáu run CPU được dựng lại từ toàn bộ dữ liệu train/valid và khớp byte ở cả năm mảng. Gói nộp kèm mã nguồn đúng phiên bản huấn luyện và dấu vết đối chiếu tại `results/completion/cache-verification.json`.
+
 `config.json`, `history.json`, `best.pth` và `frozen-selection.json` lưu số ảnh đã xử lý, môi trường, seed, epoch được chọn, lưới ngưỡng và hash. Evaluator kiểm tra chúng trước khi khám phá test. Cache v1 và checkpoint pilot cũ được giữ như artefact lịch sử, không trộn vào run cuối v2.
 
 ## Giao thức đánh giá

@@ -31,6 +31,8 @@ const order=['baseline','pixel_logistic',PRIMARY,'transunet'];
 const ablations=['bce_plain_s406','bce_dice_s406','bce_aug_s406',PRIMARY];
 const short={bce_plain_s406:'BCE',bce_dice_s406:'BCE + Dice',bce_aug_s406:'BCE + aug.',[PRIMARY]:'BCE + Dice + aug.',bce_dice_aug_s407:'Đầy đủ · seed 407',bce_dice_aug_s408:'Đầy đủ · seed 408'};
 const dec=(n,d=4)=>n.toFixed(d).replace('.',','),pct=(n,d=1)=>dec(n*100,d)+'%';
+// PowerPoint's editable workbook must round-trip the displayed chart values.
+const chartNumber=value=>Number(value.toFixed(8));
 const localScore=(name,key='dice')=>data.local.methods[name].macro.mean[key];
 const externalScore=(name,key='dice')=>data.external.methods[name].macro.mean[key];
 const sources='results/completion: frozen-selection.json; evaluation/per_image.csv; analysis.json; case-manifest.json. Hash tệp nguồn nằm trong presentation-input.json.';
@@ -61,7 +63,7 @@ function table(s,values,y=190,height=320,widths=[380,772],size=23){
 function bar(s,score,y=190,h=350){
   const names=order.map(n=>NAMES[n]),colors=[C.baseline,C.pixel,C.compact,C.trans];
   const obj=s.charts.add('bar',{position:{left:64,top:y,width:1152,height:h},categories:['Dice','IoU'],
-    series:order.map((name,i)=>({name:names[i],values:[score(name,'dice'),score(name,'iou')],fill:colors[i]})),
+    series:order.map((name,i)=>({name:names[i],values:[score(name,'dice'),score(name,'iou')].map(chartNumber),fill:colors[i]})),
     hasLegend:true,legend:{position:'bottom',overlay:false,textStyle:{typeface:'Arial',fontSize:22,fill:C.ink}},
     titlePlacement:'none',chartFill:C.bg,plotAreaFill:C.bg,chartLine:{fill:'none',width:0},plotAreaLine:{fill:'none',width:0},
     barOptions:{direction:'column',grouping:'clustered',gapWidth:100},
@@ -74,7 +76,7 @@ function bar(s,score,y=190,h=350){
 function line(s,metric,x,w,max,format){
   const history=data.runs[PRIMARY].history;
   const obj=s.charts.add('line',{position:{left:x,top:230,width:w,height:280},categories:history.map(row=>String(row.epoch)),
-    series:[{name:metric==='train_loss'?'Train loss':'Valid Dice',values:history.map(row=>row[metric]),line:{style:'solid',fill:C.compact,width:3},marker:{symbol:'none'}}],
+    series:[{name:metric==='train_loss'?'Train loss':'Valid Dice',values:history.map(row=>chartNumber(row[metric])),line:{style:'solid',fill:C.compact,width:3},marker:{symbol:'none'}}],
     hasLegend:false,chartFill:C.bg,plotAreaFill:C.bg,chartLine:{fill:'none',width:0},plotAreaLine:{fill:'none',width:0},
     lineOptions:{grouping:'standard',smooth:false},xAxis:{textStyle:{typeface:'Arial',fontSize:17,fill:C.muted},line:{fill:C.line,width:1}},
     yAxis:{min:0,max,numberFormatCode:format,textStyle:{typeface:'Arial',fontSize:20,fill:C.muted},majorGridlines:{fill:C.line,width:1}}});
@@ -111,7 +113,7 @@ function note(s,value,y=575,size=24){txt(s,value,64,y,1152,76,size,{color:C.mute
     const x=64+i*292;txt(s,i<3?`Annotation ${i+1}`:'Đồng thuận',x,195,270,42,25,{bold:true});
     await img(s,i<3?`output/presentation-evidence/annotation-${i+1}.png`:'output/presentation-evidence/worked_reference.png',x,255,270,270,'Mask thật, cùng một ảnh');
   }
-  note(s,'Nhãn → nearest resize 256×256 → bỏ phiếu; ảnh test không đi vào predictor.',575);
+  note(s,'Ảnh RGB vào predictor. Nhãn được resize nearest về 256×256 rồi bỏ phiếu để chấm.',575);
 }
 {
   const s=slide('02   Phương pháp','Đối chứng LAB–Otsu', 'Đối chứng dùng tương phản màu CIELAB và ngưỡng Otsu, sau đó hình thái học. Các tham số thực tế theo BASELINE_PROTOCOL; không chọn ngưỡng từ nhãn test. Đây là đối chứng truyền thống cần đánh giá cả khi mô hình học không cải thiện.','backend/baseline.py; N. Otsu (1979), doi:10.1109/TSMC.1979.4310076');
@@ -153,12 +155,12 @@ function note(s,value,y=575,size=24){txt(s,value,64,y,1152,76,size,{color:C.mute
   const s=slide('03   Kết quả','Ablation và biến thiên giữa ba seed', 'Bảng công bố cả bốn tổ hợp cùng ngân sách. Không mặc định mọi thành phần đều cải thiện. Mean và độ lệch chuẩn mẫu của seed 406, 407, 408 mô tả biến thiên run trên cùng benchmark, không phải ba bộ dữ liệu độc lập.');
   table(s,[['Cấu hình seed 406','Epoch chọn','Ngưỡng','Dice test','IoU test'],...ablations.map(n=>[short[n],String(data.runs[n].frozen.best_epoch),dec(data.runs[n].frozen.threshold,2),dec(localScore(n)),dec(localScore(n,'iou'))])],190,315,[400,190,170,196,196]);
   const scores=data.analysis.seed_variation.scores;
-  note(s,`Ba seed, recipe đầy đủ: Dice ${dec(scores.dice.mean)} ± ${dec(scores.dice.sample_std)} (SD mẫu).\nĐây là độ biến thiên trên cùng 295 ảnh, không phải CI tổng thể.`,550);
+  note(s,`Ba seed, cấu hình đầy đủ: Dice ${dec(scores.dice.mean)} ± ${dec(scores.dice.sample_std)} (SD mẫu).\nThêm tăng cường vào BCE + Dice ở seed 406: ΔDice ${dec(localScore(PRIMARY)-localScore('bce_dice_s406'))}.`,550);
 }
 {
   const s=slide('03   Ngoài nguồn','100 ảnh ISIC · không tinh chỉnh', 'ISIC 2018 Task 1 validation được dùng như bộ stress test ngoài nguồn. Mọi trọng số, ngưỡng và chuẩn hóa giữ nguyên. Dermoscopy và nhãn tổn thương khác ảnh patient-generated nên phải giới hạn diễn giải. Với trọng số TransUNet lịch sử không biết, chưa xác nhận đây là ảnh chưa từng thấy.','https://challenge.isic-archive.com/data/#2018; results/completion/external-overlap/summary.json; '+sources);
   bar(s,externalScore);
-  note(s,'0 trùng byte hoặc ứng viên pHash/dHash với toàn bộ 2.631 ảnh local.\nKhác miền ảnh và nhãn; điểm ISIC không phải kiểm định lâm sàng.',550,23);
+  note(s,`Compact − LAB: ΔDice ${dec(externalScore(PRIMARY)-externalScore('baseline'))}.\nBộ ISIC dùng ảnh dermoscopy và quy trình gán nhãn riêng.`,550,23);
 }
 {
   const s=slide('04   Phân tích lỗi','Mặt nạ thật và vị trí dự đoán sai', 'Hai ví dụ được chọn bằng quy tắc xếp hạng sau chấm: Dice thấp nhất và chênh lệch lớn nhất so với LAB. Nếu cùng mẫu, dùng ví dụ khác trong danh sách đã chọn. Mask đã lưu được kiểm tra counts và sáu metrics với CSV. Xanh lục là TP, đỏ là FP, xanh lam là FN; không tự gán nguyên nhân vì màu da hay ánh sáng.');
@@ -174,8 +176,10 @@ function note(s,value,y=575,size=24){txt(s,value,64,y,1152,76,size,{color:C.mute
 }
 {
   const s=slide('04   Ứng dụng','Demo dự đoán thật bằng bốn phương pháp', 'Mở ứng dụng và chạy Compact trên ảnh validation hoặc ảnh upload. Dùng ngưỡng đã chọn từ valid, hiển thị mask gốc, overlay và TP/FP/FN khi có nhãn. Ảnh upload không có nhãn thì không hiện metrics. Thiếu model báo lỗi rõ ràng. Ảnh màn hình là model 20 epoch trên valid; phép chấm tại kích thước gốc khác benchmark 256×256.');
-  await img(s,data.demo_screenshot,64,183,1152,405,'Ứng dụng thực tế với Compact U-Net đã huấn luyện20epoch');
-  note(s,'12 kiểm tra trình duyệt · upload · PNG gốc · chọn annotation · sáu kích thước màn hình.',604,22);
+  await img(s,data.demo_screenshot,64,176,630,450,'Ứng dụng thực tế với Compact U-Net đã huấn luyện 20 epoch');
+  txt(s,'Compact U-Net · 20 epoch',712,225,500,50,28,{bold:true});
+  txt(s,'Chọn ảnh và nhãn tham chiếu\nXem vùng đúng, thừa và bỏ sót\nTải mặt nạ PNG đúng kích thước gốc',712,307,500,200,27);
+  txt(s,'Ảnh tải lên chỉ có điểm khi có nhãn.',712,523,500,72,23,{color:C.muted});
 }
 {
   const s=slide('05   Kết luận','Kết quả, giới hạn và khả năng tái lập', 'Chốt bằng số thật của recipe chính và giới hạn. Không hứa điểm chấm hoặc hiệu quả chẩn đoán. Mở source/config/history/checksum và bằng chứng số liệu khi được hỏi. Test cục bộ là cách chia nội bộ, nguồn mask và lịch sử checkpoint chưa đủ xác minh, đánh giá ngoài nguồn còn khác miền.');
@@ -200,7 +204,7 @@ function note(s,value,y=575,size=24){txt(s,value,64,y,1152,76,size,{color:C.mute
 }
 {
   const s=slide('Phụ lục D','Nguồn tham khảo và bằng chứng', 'Mỗi slide có speaker notes và nguồn bằng chứng. Ảnh khớp kho DermaVQA; chưa suy ra biến đổi mask hoặc checkpoint nhất định thuộc đội vô địch. Mã nguồn công khai; tài nguyên ảnh và checkpoint theo điều kiện tương ứng.');
-  const refs=[['Thuật toán','Otsu (1979), doi:10.1109/TSMC.1979.4310076'],['Kiến trúc','U-Net 1505.04597 · GroupNorm 1803.08494\nTransUNet 2102.04306 · V-Net 1606.04797'],['Dữ liệu','DermaVQA: github.com/velvinnn/DermaVQA; osf.io/p8bfu\nMEDIQA-MAGIC 2025; DermaVQA-DAS 2512.24340v2'],['Ngoài nguồn','ISIC 2018 Task 1 validation · challenge.isic-archive.com/data'],['Mã và kết quả','github.com/Whats-up-pro/cs406-segmentation-lab\nConfig, history, frozen manifest, CSV từng ảnh và mask PNG']];
+  const refs=[['Thuật toán','Otsu (1979), doi:10.1109/TSMC.1979.4310076'],['Kiến trúc','U-Net 1505.04597 · GroupNorm 1803.08494\nTransUNet 2102.04306 · V-Net 1606.04797'],['Dữ liệu','DermaVQA: github.com/velvinnn/DermaVQA; osf.io/p8bfu\nMEDIQA-MAGIC 2025; DermaVQA-DAS 2512.24340v2'],['Ngoài nguồn','ISIC 2018 Task 1 validation · challenge.isic-archive.com/data'],['Mã và kết quả','github.com/Whats-up-pro/cs406-segmentation-lab\nNhánh feat/course-completion-20261119 · kết quả trong gói nộp']];
   refs.forEach(([label,value],i)=>{txt(s,label,64,190+i*86,240,75,23,{bold:true});txt(s,value,324,190+i*86,892,75,23);});
 }
 if(deck.slides.count!==19)throw new Error('Expected 15 main slides and 4 appendices');
