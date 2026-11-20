@@ -53,6 +53,8 @@ Augmentation chỉ áp dụng train: lật hai chiều độc lập với xác s
 
 Cache chỉ khám phá thư mục train/valid; ghi SHA-256 của từng ảnh và mask, fingerprint của danh sách nguồn, kích thước và recipe tiền xử lý. Resume phải khớp cấu hình, nguồn và dữ liệu, đồng thời phục hồi optimizer và lịch sử; một kiểm thử nhỏ xác nhận trọng số CPU sau gián đoạn khớp run không gián đoạn. CPU bật deterministic algorithms nghiêm ngặt. CUDA ghi nhận chế độ cảnh báo do bilinear backward có thể không hỗ trợ kernel deterministic; không hứa kết quả GPU trùng từng bit.
 
+Phiên bản nộp lưu và kiểm tra SHA-256 của cả năm mảng cache trước khi dùng lại. Hãy chọn thư mục cache mới khi huấn luyện bằng phiên bản này nếu bản cũ thiếu hash mảng. Cache đã dùng cho sáu run CPU được dựng lại từ toàn bộ dữ liệu train/valid và khớp byte ở cả năm mảng. Gói nộp kèm mã nguồn đúng phiên bản huấn luyện và dấu vết đối chiếu tại `results/completion/cache-verification.json`.
+
 `config.json`, `history.json`, `best.pth` và `frozen-selection.json` lưu số ảnh đã xử lý, môi trường, seed, epoch được chọn, lưới ngưỡng và hash. Evaluator kiểm tra chúng trước khi khám phá test. Cache v1 và checkpoint pilot cũ được giữ như artefact lịch sử, không trộn vào run cuối v2.
 
 ## Giao thức đánh giá
@@ -64,6 +66,8 @@ Mọi phương pháp dùng cùng ảnh RGB 256 × 256. Compact đổi tiếp v�
 Phân tích ghép cặp bắt buộc cùng ID ảnh ở hai phương pháp. Khoảng 95% dùng 2.000 lần bootstrap theo encounter, giữ toàn bộ ảnh trong nhóm được lấy lại và tính trung bình có trọng số đều theo ảnh. Mẫu không có encounter là một nhóm riêng. Đây là khoảng mô tả dưới giả định lấy mẫu cụm; tên encounter chưa xác nhận định danh bệnh nhân. Nhiều so sánh mang tính thăm dò, không có hiệu chỉnh familywise và không tuyên bố kiểm định xác nhận.
 
 Thời gian trong CSV là thời gian gọi predictor; lần đầu bao gồm lazy load, không có warm-up chuyên biệt. Median, p95 và thời gian các lần tiếp theo được mô tả với cùng giới hạn đó. Không so tốc độ GPU với CPU như một ablation thuật toán.
+
+Một số epoch của run CPU kéo dài qua thời gian máy tạm ngưng, nên `seconds` trong lịch sử bao gồm quãng gián đoạn hệ thống. Không dùng tổng thời lượng các epoch này để kết luận tốc độ huấn luyện hoặc so sánh phần cứng. Việc gián đoạn và di chuyển thư mục resume được ghi riêng, không xóa hoặc sửa thời gian đã lưu.
 
 ## Stress test ngoài nguồn
 

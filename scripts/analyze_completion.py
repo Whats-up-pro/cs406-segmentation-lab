@@ -137,14 +137,20 @@ def _plots(output, methods, primary, runs_dir, summary):
     import matplotlib.pyplot as plt
 
     names = list(methods)
+    labels = {'baseline':'LAB–Otsu', 'pixel_logistic':'Logistic pixel', 'transunet':'TransUNet (reference)',
+              'bce_plain_s406':'BCE · 406', 'bce_dice_s406':'BCE + Dice · 406',
+              'bce_aug_s406':'BCE + aug. · 406', 'bce_dice_aug_s406':'BCE + Dice + aug. · 406',
+              'bce_dice_aug_s407':'BCE + Dice + aug. · 407', 'bce_dice_aug_s408':'BCE + Dice + aug. · 408'}
     positions = np.arange(len(names))
-    figure, axis = plt.subplots(figsize=(max(8, len(names)*1.2), 4.8))
-    axis.bar(positions-.18, [methods[key]['macro']['dice'] for key in names], .36, label='Dice', color='#146b69')
-    axis.bar(positions+.18, [methods[key]['macro']['iou'] for key in names], .36, label='IoU', color='#c8873b')
-    axis.set_xticks(positions, names, rotation=25, ha='right', fontsize=8)
-    axis.set_ylim(0, 1); axis.set_ylabel('Image macro score'); axis.legend()
-    axis.set_title('Frozen model comparison'); figure.tight_layout()
-    figure.savefig(output/'method_comparison.png', dpi=180); plt.close(figure)
+    # Author at the report's actual 6.1-inch width so labels remain readable.
+    figure, axis = plt.subplots(figsize=(6.1, max(3.2,len(names)*.46+1)))
+    axis.barh(positions-.18, [methods[key]['macro']['dice'] for key in names], .36, label='Dice', color='#146b69')
+    axis.barh(positions+.18, [methods[key]['macro']['iou'] for key in names], .36, label='IoU', color='#c8873b')
+    axis.set_yticks(positions, [labels.get(name,name) for name in names], fontsize=8.5)
+    axis.invert_yaxis();axis.set_xlim(0,1);axis.set_xlabel('Image macro score',fontsize=9)
+    axis.tick_params(axis='x',labelsize=9);axis.legend(fontsize=9,loc='lower right')
+    axis.set_title('Frozen model comparison',fontsize=11); figure.tight_layout()
+    figure.savefig(output/'method_comparison.png', dpi=220); plt.close(figure)
     if runs_dir is None:
         return
     histories = []
@@ -157,17 +163,21 @@ def _plots(output, methods, primary, runs_dir, summary):
             raise ValueError(f'Missing or changed training history for plot: {method}')
         histories.append((method, json.loads(path.read_text(encoding='utf-8'))))
     if histories:
-        figure, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+        figure, axes = plt.subplots(2, 1, figsize=(6.1,6.2),sharex=True)
         for name, history in histories:
             epochs = [row['epoch'] for row in history]
-            axes[0].plot(epochs, [row['train_loss'] for row in history], label=name)
-            axes[1].plot(epochs, [row['valid_dice'] for row in history], label=name)
-        axes[0].set_ylabel('Training loss (different objectives)')
-        axes[1].set_ylabel('Validation Dice at threshold 0.5')
+            axes[0].plot(epochs, [row['train_loss'] for row in history], label=labels.get(name,name))
+            axes[1].plot(epochs, [row['valid_dice'] for row in history], label=labels.get(name,name))
+        axes[0].set_ylabel('Train loss\n(different objectives)',fontsize=9)
+        axes[0].set_ylim(bottom=0)
+        axes[1].set_ylabel('Valid Dice\n(threshold 0.50)',fontsize=9)
+        axes[1].set_ylim(0,1)
         for axis in axes:
-            axis.set_xlabel('Epoch'); axis.grid(alpha=.15)
-        axes[1].legend(fontsize=7); figure.tight_layout()
-        figure.savefig(output/'training_curves.png', dpi=180); plt.close(figure)
+            axis.tick_params(labelsize=9);axis.grid(alpha=.15)
+        axes[1].set_xlabel('Epoch',fontsize=9)
+        figure.legend(*axes[1].get_legend_handles_labels(),loc='lower center',ncol=2,fontsize=8.5,frameon=False)
+        figure.subplots_adjust(left=.15,right=.98,top=.96,bottom=.21,hspace=.28)
+        figure.savefig(output/'training_curves.png', dpi=220); plt.close(figure)
 
 
 def analyze(evaluation_dir, output, primary=PRIMARY, iterations=2000, seed=406, plots=True, runs_dir=None):

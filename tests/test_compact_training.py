@@ -55,6 +55,22 @@ def test_training_cache_uses_the_declared_common_rgb_256_then_model_path(tmp_pat
     assert manifest['preprocessing'] == 'rgb-bilinear-256-then-model-v2'
 
 
+@pytest.mark.parametrize('array_name', ['train_images.npy', 'valid_eval_masks.npy'])
+def test_cache_reuse_rejects_same_shape_value_changes(tmp_path, array_name):
+    from scripts.train_compact import prepare_training_cache
+
+    data, cache = tmp_path/'data', tmp_path/'cache'
+    make_pair(data, 'Train', 'a')
+    make_pair(data, 'Valid', 'b')
+    prepare_training_cache(data, cache, image_size=32)
+    array = np.load(cache/array_name, mmap_mode='r+')
+    array.flat[0] ^= np.uint8(1)
+    array.flush()
+    del array
+    with pytest.raises(ValueError, match='cache array hash'):
+        prepare_training_cache(data, cache, image_size=32)
+
+
 def test_cached_pair_augmentation_is_seeded_and_spatially_aligned(tmp_path):
     from scripts.train_compact import CachedPairs, prepare_training_cache
 

@@ -148,7 +148,8 @@ def test_real_checkpoint_predicts_finite_probabilities():
     pytest.importorskip("torch")
     from backend.inference import get_model_status, predict_transunet
 
-    image_path = next((Path(__file__).resolve().parents[1] / "data" / "imagesValid").glob("*.jpg"))
+    from backend.runtime import data_root
+    image_path = next((data_root() / "imagesValid").glob("*.jpg"))
     with Image.open(image_path) as image:
         result = predict_transunet(image, normalization="unit")
         assert result.shape == (image.height, image.width)

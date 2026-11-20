@@ -10,7 +10,7 @@ from PIL import Image
 from playwright.async_api import async_playwright, expect
 
 
-async def check(url: str, output: Path, presentation=False):
+async def check(url: str, output: Path, presentation=False, initial_split='test'):
     output.mkdir(parents=True, exist_ok=True)
     errors = []
     checks = []
@@ -19,12 +19,18 @@ async def check(url: str, output: Path, presentation=False):
         page = await browser.new_page(viewport={'width': 1440, 'height': 1150})
         page.on('pageerror', lambda error: errors.append(str(error)))
         await page.goto(url, wait_until='networkidle')
+        if initial_split != 'test':
+            await page.locator('#split-select').select_option(initial_split)
+            await expect(page.locator('#source-badge')).to_have_text('VALIDATION')
         await expect(page.locator('#original-image')).to_be_visible()
         await expect(page.locator('#app-error')).to_be_hidden()
         await page.wait_for_function('document.querySelector("#mask-image").complete && document.querySelector("#mask-image").naturalWidth > 0')
         assert await page.locator('.sample-card').count() == 6
         await page.screenshot(path=str(output / 'workspace-desktop.png'), full_page=True)
         checks.append('Dataset, original image, reference overlay and thumbnails load')
+        initial_id = Path(await page.locator('#image-name').inner_text()).stem
+        initial_detail = await (await page.request.get(f'{url.rstrip("/")}/api/samples/{initial_split}/{initial_id}')).json()
+        native_size = (initial_detail['width'], initial_detail['height'])
 
         await page.locator('[data-mode=original]').click()
         await expect(page.locator('#mask-image')).to_be_hidden()
@@ -34,14 +40,15 @@ async def check(url: str, output: Path, presentation=False):
         await page.locator('[data-mode=overlay]').click()
         await page.locator('#opacity').evaluate('(el) => {el.value="70";el.dispatchEvent(new Event("input", {bubbles:true}));}')
         await expect(page.locator('#mask-image')).to_have_css('opacity', '0.7')
-        await page.locator('#annotation-select').select_option('1')
-        await expect(page.locator('#mask-image')).to_have_attribute('src', __import__('re').compile('annotation=1'))
+        annotation = '1' if len(initial_detail['annotations']) > 1 else '0'
+        await page.locator('#annotation-select').select_option(annotation)
+        await expect(page.locator('#mask-image')).to_have_attribute('src', __import__('re').compile('annotation='+annotation))
         async with page.expect_download() as download_info:
             await page.locator('#download-button').click()
         download = await download_info.value
         await download.save_as(str(output / 'reference-mask.png'))
         with Image.open(output / 'reference-mask.png') as mask:
-            assert mask.size == (1944, 2541) and mask.mode == 'L'
+            assert mask.size == native_size and mask.mode == 'L'
         checks.append('Display modes, opacity, annotation switching and original-size PNG export')
 
         await page.locator('#predict-button').click()
@@ -56,7 +63,9 @@ async def check(url: str, output: Path, presentation=False):
         await page.screenshot(path=str(output / 'workspace-prediction.png'), full_page=True)
         checks.append('Real baseline and supplied TransUNet inference with reference metrics')
 
-        await page.locator('#annotation-select').select_option('consensus')
+        selected_reference = 'consensus' if initial_detail.get('consensus') else '0'
+        reference_label = 'consensus' if selected_reference == 'consensus' else initial_detail['annotations'][0]['name']
+        await page.locator('#annotation-select').select_option(selected_reference)
         await page.locator('#method-select').select_option('pixel_logistic')
         await expect(page.locator('#threshold')).to_have_value('30')
         await page.locator('#predict-button').click()
@@ -68,9 +77,9 @@ async def check(url: str, output: Path, presentation=False):
         await expect(page.locator('#layer-source')).to_have_value('prediction')
         await page.locator('#layer-source').select_option('reference')
         await expect(page.locator('[data-mode=overlay]')).to_have_attribute('aria-pressed', 'true')
-        await expect(page.locator('#mask-image')).to_have_attribute('src', __import__('re').compile('annotation=consensus'))
-        await expect(page.locator('#viewer-legend')).to_contain_text('consensus')
-        checks.append('Logistic uses validation threshold 0.30; consensus metrics and TP/FP/FN overlay match the selected source')
+        await expect(page.locator('#mask-image')).to_have_attribute('src', __import__('re').compile('annotation='+selected_reference))
+        await expect(page.locator('#viewer-legend')).to_contain_text(reference_label)
+        checks.append('Logistic uses validation threshold 0.30; metrics and TP/FP/FN overlay match the selected reference')
 
         summary = await (await page.request.get(url.rstrip('/')+'/api/summary')).json()
         compact = summary.get('compact_model', {})
@@ -87,7 +96,7 @@ async def check(url: str, output: Path, presentation=False):
             await page.locator('#download-button').click()
         await (await compact_download.value).save_as(str(output/'compact-mask.png'))
         with Image.open(output/'compact-mask.png') as mask:
-            assert mask.mode == 'L' and mask.size == (1944, 2541)
+            assert mask.mode == 'L' and mask.size == native_size
         await page.screenshot(path=str(output/'compact-prediction.png'), full_page=True)
         checks.append('Actual Compact U-Net inference, frozen validation threshold and original-size mask export')
 
@@ -96,7 +105,7 @@ async def check(url: str, output: Path, presentation=False):
         await page.locator('#sample-search').fill('')
         await expect(page.locator('.sample-card')).to_have_count(6)
         await page.locator('#next-page').click()
-        await expect(page.locator('#sample-page')).to_have_text('2 / 50')
+        await expect(page.locator('#sample-page')).to_have_text(__import__('re').compile(r'2 / \d+'))
         await page.locator('#split-select').select_option('valid')
         # Changing prediction settings must not cancel an in-flight image selection.
         await page.locator('#method-select').select_option('baseline')
@@ -182,7 +191,8 @@ async def check(url: str, output: Path, presentation=False):
     assert not errors, errors
     result = {'checks': checks, 'console_errors': errors, 'passed': len(checks),
               'compact_checkpoint_sha256': compact['checkpoint_sha256'],
-              'compact_training_epochs': compact['epochs'], 'presentation_checked': presentation}
+              'compact_training_epochs': compact['epochs'], 'presentation_checked': presentation,
+              'model_inference_split': initial_split}
     (output / 'browser-checks.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
     print(json.dumps(result, ensure_ascii=True, indent=2))
 
@@ -192,5 +202,6 @@ if __name__ == '__main__':
     parser.add_argument('--url', default='http://127.0.0.1:8000')
     parser.add_argument('--output', type=Path, default=Path('output'))
     parser.add_argument('--presentation', action='store_true')
+    parser.add_argument('--initial-split', choices=['test','valid'], default='test')
     args = parser.parse_args()
-    asyncio.run(check(args.url, args.output, args.presentation))
+    asyncio.run(check(args.url, args.output, args.presentation, args.initial_split))

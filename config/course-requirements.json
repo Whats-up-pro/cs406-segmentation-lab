@@ -30,7 +30,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         }
       ]
     },
@@ -88,7 +88,7 @@
         },
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         }
       ]
     },
@@ -150,7 +150,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         },
         {
           "root": "repo",
@@ -168,7 +168,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         }
       ]
     },
@@ -182,7 +182,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         }
       ]
     },
@@ -196,7 +196,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         },
         {
           "root": "repo",
@@ -207,23 +207,31 @@
     {
       "id": "s05-dataset-source",
       "clause": 5,
-      "kind": "human_confirmation",
-      "state": "pending",
-      "statement": "Xác nhận nguồn và phiên bản chính xác của dữ liệu cục bộ.",
-      "acceptance": "Resource owner supplies an attributable source/version and mapping explaining local filtering and mask transformations; candidate-source similarity alone is insufficient.",
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Mô tả và trích dẫn nguồn dữ liệu, phiên bản cục bộ và cách chia tập.",
+      "acceptance": "Clause5 requires a clear source and citation, not owner attestation. Verify the pinned image inventories and local split mapping; disclose unresolved mask lineage separately.",
       "evidence": [
         {
           "root": "repo",
-          "path": "docs/data-and-checkpoint.md"
+          "path": "docs/data-provenance-verified.md"
         },
         {
           "root": "project",
-          "path": "docs/confirmations/dataset-source.json",
-          "type": "confirmation",
+          "path": "results/completion/provenance/comparison_summary.json",
+          "type": "json",
           "checks": [
             {
-              "pointer": "/local_version_verified",
+              "pointer": "/set_equality/local_train_plus_test_equals_official_archive_train",
               "equals": true
+            },
+            {
+              "pointer": "/image_integrity/matching_zip_member_sizes",
+              "equals": 2631
+            },
+            {
+              "pointer": "/image_integrity/matching_zip_member_crc32",
+              "equals": 2631
             }
           ]
         }
@@ -272,7 +280,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         },
         {
           "root": "project",
@@ -334,19 +342,31 @@
     {
       "id": "s05-annotation-protocol",
       "clause": 5,
-      "kind": "human_confirmation",
-      "state": "pending",
-      "statement": "Xác nhận ý nghĩa nhãn, cách gán nhãn và biến đổi nhãn của bản cục bộ.",
-      "acceptance": "Resource owner identifies foreground semantics, annotation procedure and how multiple original labels became one local train/valid mask.",
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Mô tả phương pháp gán nhãn được công bố, mask sử dụng và các quy tắc xử lý nhãn.",
+      "acceptance": "Describe the published medical-annotator procedure, actual supplied masks and processing/consensus rules. Historical local mask derivation remains explicitly unverified; do not claim it was reconstructed or require owner attestation as an extra DOCX clause.",
       "evidence": [
         {
+          "root": "repo",
+          "path": "docs/data-annotation.md"
+        },
+        {
+          "root": "repo",
+          "path": "docs/data-provenance-verified.md"
+        },
+        {
           "root": "project",
-          "path": "docs/confirmations/annotation-protocol.json",
-          "type": "confirmation",
+          "path": "results/eda/summary.json",
+          "type": "json",
           "checks": [
             {
-              "pointer": "/label_transform_verified",
-              "equals": true
+              "pointer": "/totals/masks_decoded",
+              "equals": 3221
+            },
+            {
+              "pointer": "/totals/nonbinary_masks",
+              "equals": 0
             }
           ]
         }
@@ -472,7 +492,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         },
         {
           "root": "project",
@@ -508,7 +528,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         },
         {
           "root": "project",
@@ -553,7 +573,7 @@
       "id": "s06-new-compact-recipe",
       "clause": 6,
       "kind": "optional",
-      "state": "planned",
+      "state": "evidence_available",
       "statement": "Bổ sung phương pháp phân đoạn gọn huấn luyện từ khởi tạo ngẫu nhiên.",
       "acceptance": "Compact-model code, frozen protocol, completed full-data history and genuine trained weights support every new reported result.",
       "evidence": [
@@ -615,7 +635,7 @@
         },
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         }
       ]
     },
@@ -710,7 +730,7 @@
       "id": "s08-ablation",
       "clause": 8,
       "kind": "optional",
-      "state": "planned",
+      "state": "evidence_available",
       "statement": "Thực hiện ablation có kiểm soát để đo đóng góp từng thành phần.",
       "acceptance": "Saved, predefined loss-by-augmentation configurations are trained under the same budget; tables derive from genuine completed runs.",
       "evidence": [
@@ -786,7 +806,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         },
         {
           "root": "repo",
@@ -804,11 +824,11 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         },
         {
           "root": "project",
-          "path": "docs/defense-guide.md"
+          "path": "deliverables/completion-20261119/CS406_Defense_Guide.md"
         }
       ]
     },
@@ -881,7 +901,7 @@
         },
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         }
       ]
     },
@@ -889,23 +909,23 @@
       "id": "s11-external-generalization",
       "clause": 11,
       "kind": "optional",
-      "state": "planned",
+      "state": "evidence_available",
       "statement": "Kiểm thử ngoài nguồn dữ liệu ban đầu với phạm vi kết luận rõ ràng.",
       "acceptance": "Legitimate external images/masks, source/license manifest and frozen-parameter evaluation support a stress test; modality/semantic shifts and no clinical validation are explicit.",
       "evidence": [
         {
           "root": "project",
-          "path": "results/completion/external/manifest.json",
+          "path": "data_external/isic2018_validation/manifest.json",
           "type": "json"
         },
         {
           "root": "project",
-          "path": "results/completion/external/summary.json",
+          "path": "results/completion/evaluation-isic/summary.json",
           "type": "json",
           "checks": [
             {
-              "pointer": "/status",
-              "equals": "complete"
+              "pointer": "/comparison_complete",
+              "equals": true
             }
           ]
         }
@@ -959,7 +979,7 @@
       "id": "s12-final-live-review",
       "clause": 12,
       "kind": "mandatory",
-      "state": "planned",
+      "state": "evidence_available",
       "statement": "Kiểm chứng demo cuối cùng và mô hình bổ sung bằng lần chạy thật.",
       "acceptance": "Recorded browser/API checks cover a genuine inference, original-size PNG, absent-model failure and upload without ground truth on the final source revision.",
       "evidence": [
@@ -986,15 +1006,15 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         },
         {
           "root": "project",
-          "path": "deliverables/CS406_Report.docx"
+          "path": "deliverables/completion-20261119/CS406_Report.docx"
         },
         {
           "root": "project",
-          "path": "deliverables/CS406_Report.pdf"
+          "path": "deliverables/completion-20261119/CS406_Report.pdf"
         }
       ]
     },
@@ -1008,7 +1028,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/report.md"
+          "path": "docs/report-completion.md"
         }
       ]
     },
@@ -1016,7 +1036,7 @@
       "id": "s13-final-render-review",
       "clause": 13,
       "kind": "mandatory",
-      "state": "planned",
+      "state": "evidence_available",
       "statement": "Bộ báo cáo cuối cùng nhất quán với thực nghiệm và có bố cục được rà soát.",
       "acceptance": "Final DOCX/PDF hashes and full-page visual review confirm current result tables, updated TOC/caption pages, no editorial note and confirmed cover metadata.",
       "evidence": [
@@ -1154,7 +1174,7 @@
       "id": "s14-asset-access-and-clean-package",
       "clause": 14,
       "kind": "mandatory",
-      "state": "planned",
+      "state": "evidence_available",
       "statement": "Giảng viên có thể lấy tài nguyên và chạy bộ nộp trên bản source sạch.",
       "acceptance": "A saved clean-install/package review verifies data access instructions, live checkpoint/artifact links, model hashes and documented execution; source archive excludes raw data, private files and model binaries.",
       "evidence": [
@@ -1189,30 +1209,37 @@
       "evidence": [
         {
           "root": "project",
-          "path": "deliverables/CS406_Defense.pptx"
+          "path": "deliverables/completion-20261119/CS406_Defense.pptx"
         },
         {
           "root": "project",
-          "path": "deliverables/CS406_Defense.pdf"
+          "path": "deliverables/completion-20261119/CS406_Defense.pdf"
         },
         {
           "root": "project",
-          "path": "docs/defense-guide.md"
+          "path": "deliverables/completion-20261119/CS406_Defense_Guide.md"
         }
       ]
     },
     {
       "id": "s15-actual-contributions",
       "clause": 15,
-      "kind": "human_confirmation",
-      "state": "pending",
-      "statement": "Thành viên xác nhận phần thực sự đã làm và các quyết định của nhóm.",
-      "acceptance": "An attributed contribution record reflects actual work rather than suggested roles generated for rehearsal.",
+      "kind": "mandatory",
+      "state": "evidence_available",
+      "statement": "Giải thích các phần đồ án đã triển khai, lý do thiết kế và bằng chứng thực nghiệm.",
+      "acceptance": "Clause15 asks what the group implemented, why, and what experiments establish. Provide project-level documentary evidence; do not invent individual allocations or require an extra individually attested contribution matrix.",
       "evidence": [
         {
+          "root": "repo",
+          "path": "docs/project-contributions.md"
+        },
+        {
+          "root": "repo",
+          "path": "docs/experiments-completion.md"
+        },
+        {
           "root": "project",
-          "path": "docs/confirmations/contributions.json",
-          "type": "confirmation"
+          "path": "deliverables/completion-20261119/CS406_Defense_Guide.md"
         }
       ]
     },
@@ -1222,11 +1249,11 @@
       "kind": "human_confirmation",
       "state": "pending",
       "statement": "Mọi thành viên hiểu đồ án và có khả năng trả lời câu hỏi.",
-      "acceptance": "Members rehearse and confirm understanding of the task, split/leakage, model, metrics, contributions and failure cases; an answer guide alone cannot establish competence.",
+      "acceptance": "Actual human readiness remains unverified until demonstrated in defense or rehearsal. An attributed record may report participation, but neither a signed JSON nor its presence is a DOCX requirement or proof of understanding.",
       "evidence": [
         {
           "root": "project",
-          "path": "docs/defense-guide.md"
+          "path": "deliverables/completion-20261119/CS406_Defense_Guide.md"
         },
         {
           "root": "project",
@@ -1259,7 +1286,7 @@
       "id": "s17-advanced-ablations-seeds",
       "clause": 17,
       "kind": "optional",
-      "state": "planned",
+      "state": "evidence_available",
       "statement": "Nâng mức nghiên cứu bằng cải tiến pipeline, ablation và nhiều seed.",
       "acceptance": "Four predefined compact-model ablations and three declared seeds have genuine complete histories; aggregate and seed variation are reported without claiming larger models imply better projects.",
       "evidence": [
@@ -1305,7 +1332,7 @@
       "evidence": [
         {
           "root": "project",
-          "path": "docs/defense-guide.md"
+          "path": "deliverables/completion-20261119/CS406_Defense_Guide.md"
         },
         {
           "root": "repo",

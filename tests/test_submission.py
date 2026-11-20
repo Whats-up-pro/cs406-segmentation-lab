@@ -80,7 +80,7 @@ def test_optional_and_human_confirmation_have_different_readiness_effects(tmp_pa
     assert result['counts']['optional']['pending'] == 1
 
 
-def test_human_confirmation_requires_a_signed_record_not_a_readme(tmp_path):
+def test_human_confirmation_requires_an_attributed_record_not_a_readme(tmp_path):
     config, repo, project = rubric(tmp_path)
     config['requirements'][0].update(kind='human_confirmation', state='confirmed')
     result = audit(config, repo, project)

@@ -23,6 +23,8 @@ from scripts.train import discover_pairs
 
 ROOT = Path(__file__).resolve().parents[1]
 EVALUATION_SIZE = 256
+CACHE_ARRAYS = ('train_images.npy', 'train_masks.npy', 'valid_images.npy',
+                'valid_masks.npy', 'valid_eval_masks.npy')
 
 
 def sha256(path):
@@ -55,11 +57,13 @@ def prepare_training_cache(data_dir, cache_dir, image_size=128):
         existing = json.loads(manifest_path.read_text(encoding='utf-8'))
         if existing.get('fingerprint') != fingerprint:
             raise ValueError('Existing cache differs from source data or requested resolution; choose a fresh cache directory')
-        for split, pairs in splits.items():
-            images = np.load(cache_dir / f'{split}_images.npy', mmap_mode='r', allow_pickle=False)
-            masks = np.load(cache_dir / f'{split}_masks.npy', mmap_mode='r', allow_pickle=False)
-            if images.shape != (len(pairs), 3, image_size, image_size) or masks.shape != (len(pairs), 1, image_size, image_size):
-                raise ValueError('Cached array dimensions do not match the manifest')
+        checksums = existing.get('array_sha256')
+        if not isinstance(checksums, dict) or set(checksums) != set(CACHE_ARRAYS):
+            raise ValueError('Missing cache array hashes; choose a fresh cache directory')
+        for name in CACHE_ARRAYS:
+            path = cache_dir / name
+            if not path.is_file() or sha256(path) != checksums[name]:
+                raise ValueError(f'Invalid cache array hash: {name}; choose a fresh cache directory')
         return existing
     cache_dir.mkdir(parents=True, exist_ok=True)
     if any(cache_dir.glob('*.npy')):
@@ -91,7 +95,8 @@ def prepare_training_cache(data_dir, cache_dir, image_size=128):
     manifest = {'format': 'compact-training-cache-v2', 'fingerprint': fingerprint, 'image_size': image_size,
                 'preprocessing': INPUT_PREPROCESSING,
                 'evaluation_size': EVALUATION_SIZE, 'data_dir': str(data_dir), 'samples': samples,
-                'counts': {split: len(pairs) for split, pairs in splits.items()}, 'test_accessed': False}
+                'counts': {split: len(pairs) for split, pairs in splits.items()}, 'test_accessed': False,
+                'array_sha256': {name: sha256(cache_dir / name) for name in CACHE_ARRAYS}}
     write_json(manifest_path, manifest)
     return manifest
 
